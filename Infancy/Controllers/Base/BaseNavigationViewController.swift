@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import QMUIKit
 
-class BaseNavigationViewController: UINavigationController {
+class BaseNavigationViewController: QMUINavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
