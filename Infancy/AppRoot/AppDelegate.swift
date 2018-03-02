@@ -8,6 +8,7 @@
 
 import UIKit
 import IQKeyboardManagerSwift
+import QMUIKit
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
@@ -17,9 +18,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
+        
+        
         IQKeyboardManager.sharedManager().enable = true //键盘管理
         
-      QMUIConfigurationTemplate.setupConfigurationTemplate()//QMUI全局配置
+      
+        QMUIConfigurationTemplate.setupConfigurationTemplate()//QMUI全局配置
+        
+        self.window = UIWindow.init(frame: UIScreen.main.bounds)
+        self.window?.backgroundColor = UIColor.white
+        self.window?.rootViewController = BaseNavigationViewController(rootViewController: RootViewController())
+        self.window?.makeKeyAndVisible()
+        
+        
         return true
     }
     

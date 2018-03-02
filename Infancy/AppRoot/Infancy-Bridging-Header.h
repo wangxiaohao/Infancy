@@ -4,5 +4,4 @@
 
 #import <MJRefresh/MJRefresh.h>
 #import <QMUIKit/QMUIKit.h>
-#import "QMUIConfigurationTemplate.h"
 #import <FMDB/FMDB.h>

@@ -13,3 +13,9 @@ import SwiftyJSON
 protocol ModelBase {
     static func initWith<T>(_ json:JSON)->T
 }
+
+
+/// 选择图片
+protocol PhotoDelegate:UIImagePickerControllerDelegate,UINavigationControllerDelegate{
+    func didChooseImage( images : [UIImage])
+}

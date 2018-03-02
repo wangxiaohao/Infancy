@@ -11,6 +11,15 @@
 		D258551D2047A23B0039C8B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D258551C2047A23B0039C8B3 /* AppDelegate.swift */; };
 		D25855242047A23B0039C8B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D25855232047A23B0039C8B3 /* Assets.xcassets */; };
 		D25855272047A23B0039C8B3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D25855252047A23B0039C8B3 /* LaunchScreen.storyboard */; };
+		D28BAE822048F5B700A2064A /* DemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28BAE812048F5B700A2064A /* DemoViewController.swift */; };
+		D28BAE842048F98F00A2064A /* SDKInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28BAE832048F98F00A2064A /* SDKInfo.swift */; };
+		D28BAE862048FBA100A2064A /* NotificationConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28BAE852048FBA100A2064A /* NotificationConfig.swift */; };
+		D28BAE882048FC7500A2064A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D28BAE872048FC7400A2064A /* Default-568h@2x.png */; };
+		D28BAE8B2049079700A2064A /* PhotoManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28BAE8A2049079700A2064A /* PhotoManger.swift */; };
+		D28BAE8F204908D000A2064A /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28BAE8D204908D000A2064A /* WebViewController.swift */; };
+		D28BAE90204908D000A2064A /* WebViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D28BAE8E204908D000A2064A /* WebViewController.xib */; };
+		D28BAE95204938C400A2064A /* InSingleImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28BAE94204938C400A2064A /* InSingleImagePicker.swift */; };
+		D28BAE97204939D900A2064A /* InMultipleImagePickerPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28BAE96204939D900A2064A /* InMultipleImagePickerPreviewViewController.swift */; };
 		D29DF3DB2047B63300F00356 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3DA2047B63300F00356 /* BaseViewController.swift */; };
 		D29DF3DD2047B64800F00356 /* BaseNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3DC2047B64800F00356 /* BaseNavigationViewController.swift */; };
 		D29DF3DF2047B66900F00356 /* BaseTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3DE2047B66900F00356 /* BaseTabBarViewController.swift */; };
@@ -21,12 +30,12 @@
 		D29DF3EC2047CCB400F00356 /* CacheManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3EA2047CCB400F00356 /* CacheManger.swift */; };
 		D29DF3ED2047CCB400F00356 /* SQLManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3EB2047CCB400F00356 /* SQLManger.swift */; };
 		D29DF3F32047D73E00F00356 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3F22047D73E00F00356 /* AppInfo.swift */; };
-		D29DF3F72047D93F00F00356 /* CustomUIHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3F52047D93F00F00356 /* CustomUIHelp.swift */; };
+		D29DF3F72047D93F00F00356 /* UIHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3F52047D93F00F00356 /* UIHelp.swift */; };
 		D29DF3F82047D93F00F00356 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3F62047D93F00F00356 /* ToastView.swift */; };
-		D29DF3FE2047DB0E00F00356 /* QMUIConfigurationTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3FD2047DB0E00F00356 /* QMUIConfigurationTemplate.m */; };
 		D29DF4012047E03A00F00356 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF4002047E03A00F00356 /* Protocols.swift */; };
 		D29DF4032047F7E600F00356 /* ModelExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF4022047F7E600F00356 /* ModelExample.swift */; };
-		D29DF4052047FB3200F00356 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D29DF4042047FB3200F00356 /* Main.storyboard */; };
+		D29DF40C20481CDD00F00356 /* QMUIConfigurationTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF40B20481CDD00F00356 /* QMUIConfigurationTemplate.swift */; };
+		D29DF40E204820A900F00356 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF40D204820A900F00356 /* Color.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +46,15 @@
 		D25855232047A23B0039C8B3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D25855262047A23B0039C8B3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D25855282047A23B0039C8B3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D28BAE812048F5B700A2064A /* DemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewController.swift; sourceTree = "<group>"; };
+		D28BAE832048F98F00A2064A /* SDKInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SDKInfo.swift; sourceTree = "<group>"; };
+		D28BAE852048FBA100A2064A /* NotificationConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationConfig.swift; sourceTree = "<group>"; };
+		D28BAE872048FC7400A2064A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		D28BAE8A2049079700A2064A /* PhotoManger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoManger.swift; sourceTree = "<group>"; };
+		D28BAE8D204908D000A2064A /* WebViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		D28BAE8E204908D000A2064A /* WebViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = WebViewController.xib; sourceTree = "<group>"; };
+		D28BAE94204938C400A2064A /* InSingleImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InSingleImagePicker.swift; sourceTree = "<group>"; };
+		D28BAE96204939D900A2064A /* InMultipleImagePickerPreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMultipleImagePickerPreviewViewController.swift; sourceTree = "<group>"; };
 		D29DF3DA2047B63300F00356 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		D29DF3DC2047B64800F00356 /* BaseNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNavigationViewController.swift; sourceTree = "<group>"; };
 		D29DF3DE2047B66900F00356 /* BaseTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseTabBarViewController.swift; sourceTree = "<group>"; };
@@ -48,13 +66,12 @@
 		D29DF3EB2047CCB400F00356 /* SQLManger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLManger.swift; sourceTree = "<group>"; };
 		D29DF3EE2047D63A00F00356 /* Infancy-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Infancy-Bridging-Header.h"; sourceTree = "<group>"; };
 		D29DF3F22047D73E00F00356 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
-		D29DF3F52047D93F00F00356 /* CustomUIHelp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomUIHelp.swift; sourceTree = "<group>"; };
+		D29DF3F52047D93F00F00356 /* UIHelp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIHelp.swift; sourceTree = "<group>"; };
 		D29DF3F62047D93F00F00356 /* ToastView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
-		D29DF3FC2047DB0E00F00356 /* QMUIConfigurationTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QMUIConfigurationTemplate.h; sourceTree = "<group>"; };
-		D29DF3FD2047DB0E00F00356 /* QMUIConfigurationTemplate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QMUIConfigurationTemplate.m; sourceTree = "<group>"; };
 		D29DF4002047E03A00F00356 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		D29DF4022047F7E600F00356 /* ModelExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelExample.swift; sourceTree = "<group>"; };
-		D29DF4042047FB3200F00356 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		D29DF40B20481CDD00F00356 /* QMUIConfigurationTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplate.swift; sourceTree = "<group>"; };
+		D29DF40D204820A900F00356 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
 		DBFF7000C1E461090F1AD3C3 /* Pods-Infancy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Infancy.release.xcconfig"; path = "Pods/Target Support Files/Pods-Infancy/Pods-Infancy.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -90,6 +107,7 @@
 		D25855102047A23B0039C8B3 = {
 			isa = PBXGroup;
 			children = (
+				D28BAE912049215700A2064A /* Demo */,
 				D258551B2047A23B0039C8B3 /* Infancy */,
 				D258551A2047A23B0039C8B3 /* Products */,
 				793755EC0AE53088F3CF4CD7 /* Pods */,
@@ -108,7 +126,7 @@
 		D258551B2047A23B0039C8B3 /* Infancy */ = {
 			isa = PBXGroup;
 			children = (
-				D29DF3D32047A86E00F00356 /* Root */,
+				D29DF3D32047A86E00F00356 /* AppRoot */,
 				D29DF3D22047A85000F00356 /* Manger */,
 				D29DF3D12047A42E00F00356 /* Util */,
 				D29DF3D02047A38800F00356 /* Controllers */,
@@ -121,12 +139,41 @@
 			path = Infancy;
 			sourceTree = "<group>";
 		};
+		D28BAE892049077700A2064A /* Photo */ = {
+			isa = PBXGroup;
+			children = (
+				D28BAE8A2049079700A2064A /* PhotoManger.swift */,
+				D28BAE94204938C400A2064A /* InSingleImagePicker.swift */,
+				D28BAE96204939D900A2064A /* InMultipleImagePickerPreviewViewController.swift */,
+			);
+			path = Photo;
+			sourceTree = "<group>";
+		};
+		D28BAE8C204908B900A2064A /* Web */ = {
+			isa = PBXGroup;
+			children = (
+				D28BAE8D204908D000A2064A /* WebViewController.swift */,
+				D28BAE8E204908D000A2064A /* WebViewController.xib */,
+			);
+			path = Web;
+			sourceTree = "<group>";
+		};
+		D28BAE912049215700A2064A /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				D28BAE812048F5B700A2064A /* DemoViewController.swift */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
 		D29DF3CB2047A2FF00F00356 /* Config */ = {
 			isa = PBXGroup;
 			children = (
-				D29DF3FB2047DB0E00F00356 /* QMUIConfigurationTemplate */,
+				D29DF3FB2047DB0E00F00356 /* UIConfig */,
 				D29DF3E32047CA8F00F00356 /* APIList.swift */,
+				D28BAE832048F98F00A2064A /* SDKInfo.swift */,
 				D29DF3F22047D73E00F00356 /* AppInfo.swift */,
+				D28BAE852048FBA100A2064A /* NotificationConfig.swift */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -134,6 +181,7 @@
 		D29DF3CC2047A30900F00356 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D28BAE872048FC7400A2064A /* Default-568h@2x.png */,
 				D25855232047A23B0039C8B3 /* Assets.xcassets */,
 			);
 			path = Resources;
@@ -157,7 +205,6 @@
 		D29DF3CF2047A38300F00356 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				D29DF4042047FB3200F00356 /* Main.storyboard */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -165,6 +212,7 @@
 		D29DF3D02047A38800F00356 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				D28BAE8C204908B900A2064A /* Web */,
 				D29DF3D92047B61B00F00356 /* Base */,
 			);
 			path = Controllers;
@@ -174,7 +222,7 @@
 			isa = PBXGroup;
 			children = (
 				D29DF4002047E03A00F00356 /* Protocols.swift */,
-				D29DF3F42047D92E00F00356 /* QMUI */,
+				D29DF3F42047D92E00F00356 /* UIHelp */,
 				D29DF3E52047CB4B00F00356 /* Function.swift */,
 			);
 			path = Util;
@@ -183,13 +231,14 @@
 		D29DF3D22047A85000F00356 /* Manger */ = {
 			isa = PBXGroup;
 			children = (
+				D28BAE892049077700A2064A /* Photo */,
 				D29DF3E92047CC9200F00356 /* Cache */,
 				D29DF3E02047C7ED00F00356 /* NetWork */,
 			);
 			path = Manger;
 			sourceTree = "<group>";
 		};
-		D29DF3D32047A86E00F00356 /* Root */ = {
+		D29DF3D32047A86E00F00356 /* AppRoot */ = {
 			isa = PBXGroup;
 			children = (
 				D25855282047A23B0039C8B3 /* Info.plist */,
@@ -197,7 +246,7 @@
 				D258551C2047A23B0039C8B3 /* AppDelegate.swift */,
 				D29DF3EE2047D63A00F00356 /* Infancy-Bridging-Header.h */,
 			);
-			path = Root;
+			path = AppRoot;
 			sourceTree = "<group>";
 		};
 		D29DF3D92047B61B00F00356 /* Base */ = {
@@ -228,22 +277,22 @@
 			path = Cache;
 			sourceTree = "<group>";
 		};
-		D29DF3F42047D92E00F00356 /* QMUI */ = {
+		D29DF3F42047D92E00F00356 /* UIHelp */ = {
 			isa = PBXGroup;
 			children = (
-				D29DF3F52047D93F00F00356 /* CustomUIHelp.swift */,
+				D29DF3F52047D93F00F00356 /* UIHelp.swift */,
 				D29DF3F62047D93F00F00356 /* ToastView.swift */,
 			);
-			path = QMUI;
+			path = UIHelp;
 			sourceTree = "<group>";
 		};
-		D29DF3FB2047DB0E00F00356 /* QMUIConfigurationTemplate */ = {
+		D29DF3FB2047DB0E00F00356 /* UIConfig */ = {
 			isa = PBXGroup;
 			children = (
-				D29DF3FC2047DB0E00F00356 /* QMUIConfigurationTemplate.h */,
-				D29DF3FD2047DB0E00F00356 /* QMUIConfigurationTemplate.m */,
+				D29DF40B20481CDD00F00356 /* QMUIConfigurationTemplate.swift */,
+				D29DF40D204820A900F00356 /* Color.swift */,
 			);
-			path = QMUIConfigurationTemplate;
+			path = UIConfig;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -309,9 +358,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D29DF4052047FB3200F00356 /* Main.storyboard in Resources */,
 				D25855272047A23B0039C8B3 /* LaunchScreen.storyboard in Resources */,
 				D25855242047A23B0039C8B3 /* Assets.xcassets in Resources */,
+				D28BAE882048FC7500A2064A /* Default-568h@2x.png in Resources */,
+				D28BAE90204908D000A2064A /* WebViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -371,21 +421,29 @@
 			buildActionMask = 2147483647;
 			files = (
 				D29DF3ED2047CCB400F00356 /* SQLManger.swift in Sources */,
-				D29DF3FE2047DB0E00F00356 /* QMUIConfigurationTemplate.m in Sources */,
+				D28BAE8F204908D000A2064A /* WebViewController.swift in Sources */,
 				D258551D2047A23B0039C8B3 /* AppDelegate.swift in Sources */,
+				D28BAE822048F5B700A2064A /* DemoViewController.swift in Sources */,
 				D29DF3E42047CA8F00F00356 /* APIList.swift in Sources */,
 				D29DF3E22047C90B00F00356 /* RequestRouter.swift in Sources */,
 				D29DF3EC2047CCB400F00356 /* CacheManger.swift in Sources */,
 				D29DF3DB2047B63300F00356 /* BaseViewController.swift in Sources */,
+				D28BAE97204939D900A2064A /* InMultipleImagePickerPreviewViewController.swift in Sources */,
+				D28BAE95204938C400A2064A /* InSingleImagePicker.swift in Sources */,
+				D29DF40C20481CDD00F00356 /* QMUIConfigurationTemplate.swift in Sources */,
 				D29DF3DF2047B66900F00356 /* BaseTabBarViewController.swift in Sources */,
 				D29DF3F82047D93F00F00356 /* ToastView.swift in Sources */,
+				D28BAE8B2049079700A2064A /* PhotoManger.swift in Sources */,
+				D29DF40E204820A900F00356 /* Color.swift in Sources */,
 				D29DF4032047F7E600F00356 /* ModelExample.swift in Sources */,
+				D28BAE862048FBA100A2064A /* NotificationConfig.swift in Sources */,
 				D29DF3DD2047B64800F00356 /* BaseNavigationViewController.swift in Sources */,
 				D29DF4012047E03A00F00356 /* Protocols.swift in Sources */,
 				D29DF3F32047D73E00F00356 /* AppInfo.swift in Sources */,
 				D29DF3E82047CBF100F00356 /* NetWorManger.swift in Sources */,
 				D29DF3E62047CB4B00F00356 /* Function.swift in Sources */,
-				D29DF3F72047D93F00F00356 /* CustomUIHelp.swift in Sources */,
+				D29DF3F72047D93F00F00356 /* UIHelp.swift in Sources */,
+				D28BAE842048F98F00A2064A /* SDKInfo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -518,13 +576,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Infancy/Root/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Infancy/AppRoot/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ios.www.Infancy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Infancy/Root/Infancy-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Infancy/AppRoot/Infancy-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -539,13 +597,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = "$(SRCROOT)/Infancy/Root/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Infancy/AppRoot/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ios.www.Infancy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "Infancy/Root/Infancy-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Infancy/AppRoot/Infancy-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

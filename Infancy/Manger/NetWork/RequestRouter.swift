@@ -22,7 +22,7 @@ enum RequestStaus : Int {
 
 enum Router: URLRequestConvertible {
     fileprivate static let baseURLString = APIList.base_url
-    case getRequest(String,[String:Any],ConditionType?)
+    case getRequest(String,[String:Any]?,ConditionType?)
     case postRequest(String,[String:Any],ConditionType?)
     case putRequest(String,[String:Any],ConditionType?)
     case deleteRequest(String,[String:Any],ConditionType?)
@@ -93,7 +93,7 @@ enum Router: URLRequestConvertible {
         case .postRequest(_,let parameters ,_ ),.putRequest(_,let parameters ,_ ),.deleteRequest(_,let parameters ,_ ):
             deprint("========request Body,\(parameters)")
             urlRequest = try JSONEncoding.default.encode(urlRequest, with: parameters)
-        case .getRequest(_, var parameters, _):
+        case .getRequest(_, let parameters, _):
             urlRequest = try URLEncoding.default.encode(urlRequest, with: parameters)
             deprint("========request Body,\(parameters)")
             deprint("========get URL \(urlRequest.urlRequest?.url ?? url)")

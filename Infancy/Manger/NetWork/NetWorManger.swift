@@ -22,7 +22,7 @@ class RequestAFN {
     /// - Parameters:
     ///   - router: 请求参数
     ///   - completeHandler: 回调
-    func requestData<T:ModelBase>(_ router:Router,_ model:T? = nil,completeHandler:@escaping ((Bool,Any))->Void) {
+    func requestData<T:ModelBase>(router:Router,model:T? = nil,completeHandler:@escaping ((Bool,Any))->Void) {
         
         Alamofire.request(router).responseJSON(completionHandler: {
             [unowned self] response in
@@ -60,7 +60,7 @@ class RequestAFN {
     /// - Parameters:
     ///   - router: 请求参数
     ///   - completeHandler: 回调
-    func interactiveRequest(_ router:Router,completeHandler:@escaping ((Bool,Any))->Void){
+    func interactiveRequest(router:Router,completeHandler:@escaping ((Bool,Any))->Void){
         Alamofire.request(router).responseJSON(completionHandler: {
             [unowned self] response in
             switch response.result {
