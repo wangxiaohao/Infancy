@@ -8,6 +8,8 @@
 
 import UIKit
 import QMUIKit
+import Alamofire
+import SwiftyJSON
 class RootViewController: BaseViewController {
 
     var tableView:QMUITableView!
@@ -60,6 +62,8 @@ extension RootViewController:QMUITableViewDelegate,QMUITableViewDataSource{
         switch indexPath.row {
         case 0:
             self.actionSheetToPickImage()
+        case 1:
+            sysRequestData()
         default:
             break
         }
@@ -78,6 +82,7 @@ extension RootViewController:PhotoDelegate{
 
 extension RootViewController{
     
+    /// 适合简单的模型解析
     func requestData(){
         ToastView.showLoading()
         NetManger.requestData(router: Router.getRequest(APIList.base_url, nil, nil), model: ExampleModel())
@@ -88,8 +93,25 @@ extension RootViewController{
                 }
                 ToastView.hide()
             }
-        
-        
     }
+    
+    func sysRequestData(){
+        ToastView.showLoading()
+        Alamofire.request(Router.getRequest(APIList.base_url, ["city":"北京"], nil)).responseJSON {
+            (response) in
+            ToastView.hide()
+            switch response.result{
+            case .success:
+                let json =  JSON(response.data)
+                ToastView.showMessge(json["message"].stringValue)
+                deprint(json)
+                break
+            case .failure(_):
+            break
+            }
+            
+        }
+    }
+    
     
 }

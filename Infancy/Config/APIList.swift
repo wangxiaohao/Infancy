@@ -9,5 +9,6 @@
 import Foundation
 
 struct APIList {
-    static let base_url = AppInfo._DEBUG ? "http://test.baidu.com"  :"https://baidu.com"   //域名
+    static let base_url = AppInfo._DEBUG ? "https://www.sojson.com/open/api/weather/json.shtml"  :"https://baidu.com"   //域名
+    
 }

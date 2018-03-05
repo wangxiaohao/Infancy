@@ -17,7 +17,7 @@ let NetManger = RequestAFN()
 class RequestAFN {
     let reachManger = NetworkReachabilityManager(host:"www.baidu.com")
     
-    /// 请求数据
+    /// 请求数据 简单的json转模型 直接解析返回模型 不需要的其他数据的使用
     ///
     /// - Parameters:
     ///   - router: 请求参数
@@ -55,12 +55,13 @@ class RequestAFN {
         })
     }
     
-    /// 交互式请求
+   
+    /// 通用请求 返回json数据
     ///
     /// - Parameters:
     ///   - router: 请求参数
     ///   - completeHandler: 回调
-    func interactiveRequest(router:Router,completeHandler:@escaping ((Bool,Any))->Void){
+    func commonRequest(router:Router,completeHandler:@escaping ((Bool,Any))->Void){
         Alamofire.request(router).responseJSON(completionHandler: {
             [unowned self] response in
             switch response.result {
