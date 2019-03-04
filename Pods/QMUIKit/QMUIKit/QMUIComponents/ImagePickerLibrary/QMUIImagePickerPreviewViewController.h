@@ -1,17 +1,23 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUIImagePickerPreviewViewController.h
 //  qmui
 //
-//  Created by Kayo Lee on 15/5/3.
-//  Copyright (c) 2015年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 15/5/3.
 //
 
 #import <UIKit/UIKit.h>
 #import "QMUIImagePreviewViewController.h"
 #import "QMUIAsset.h"
 
-@class QMUIButton;
-@class QMUIPieProgressView;
+@class QMUIButton, QMUINavigationButton;
 @class QMUIImagePickerViewController;
 @class QMUIImagePickerPreviewViewController;
 
@@ -41,10 +47,8 @@
 @property(nonatomic, strong) UIColor *toolBarTintColor UI_APPEARANCE_SELECTOR;
 
 @property(nonatomic, strong, readonly) UIView *topToolBarView;
-@property(nonatomic, strong, readonly) QMUIButton *backButton;
+@property(nonatomic, strong, readonly) QMUINavigationButton *backButton;
 @property(nonatomic, strong, readonly) QMUIButton *checkboxButton;
-@property(nonatomic, strong, readonly) QMUIPieProgressView *progressView;
-@property(nonatomic, strong, readonly) UIButton *downloadRetryButton;
 
 /// 由于组件需要通过本地图片的 QMUIAsset 对象读取图片的详细信息，因此这里的需要传入的是包含一个或多个 QMUIAsset 对象的数组
 @property(nonatomic, strong) NSMutableArray<QMUIAsset *> *imagesAssetArray;
@@ -79,6 +83,6 @@
 
 @interface QMUIImagePickerPreviewViewController (UIAppearance)
 
-+ (instancetype)appearance;
++ (nonnull instancetype)appearance;
 
 @end

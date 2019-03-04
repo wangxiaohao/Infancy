@@ -184,7 +184,7 @@ struct QMUIConfigurationTemplate {
         
         //MARK: - UIWindowLevel
         QMUICMI?.windowLevelQMUIAlertView = UIWindowLevelAlert - 4.0                // UIWindowLevelQMUIAlertView : QMUIModalPresentationViewController、QMUIPopupContainerView 里使用的 UIWindow 的 windowLevel
-        QMUICMI?.windowLevelQMUIImagePreviewView = UIWindowLevelStatusBar + 1.0     // UIWindowLevelQMUIImagePreviewView : QMUIImagePreviewViewController 里使用的 UIWindow 的 windowLevel
+//        QMUICMI?.windowLevelQMUIImagePreviewView = UIWindowLevelStatusBar + 1.0     // UIWindowLevelQMUIImagePreviewView : QMUIImagePreviewViewController 里使用的 UIWindow 的 windowLevel
         
         //MARK: - QMUILog
         QMUICMI?.shouldPrintDefaultLog = true                                        // ShouldPrintDefaultLog : 是否允许输出 QMUILogLevelDefault 级别的 log

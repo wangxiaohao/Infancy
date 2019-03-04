@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUIMoreOperationController.h
 //  qmui
 //
-//  Created by zhoon, MoLice on 17/11/15.
-//  Copyright (c) 2017年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 17/11/15.
 //
 
 #import <Foundation/Foundation.h>
@@ -41,7 +48,7 @@
  *  2. 默认自带取消按钮，也可自行隐藏。
  *  3. 支持以 UIAppearance 的方式配置样式皮肤。
  */
-@interface QMUIMoreOperationController : UIViewController <QMUIModalPresentationContentViewControllerProtocol, QMUIModalPresentationViewControllerDelegate>
+@interface QMUIMoreOperationController : UIViewController <QMUIModalPresentationContentViewControllerProtocol, QMUIModalPresentationViewControllerDelegate, QMUIModalPresentationComponentProtocol>
 
 @property(nonatomic, strong) UIColor *contentBackgroundColor UI_APPEARANCE_SELECTOR;// 面板上半部分（不包含取消按钮）背景色
 @property(nonatomic, assign) CGFloat contentEdgeMargin UI_APPEARANCE_SELECTOR;// 面板距离屏幕的上下左右间距
@@ -55,9 +62,10 @@
 @property(nonatomic, strong) UIColor *itemBackgroundColor UI_APPEARANCE_SELECTOR;// 按钮的背景色
 @property(nonatomic, strong) UIColor *itemTitleColor UI_APPEARANCE_SELECTOR;// 按钮的标题颜色
 @property(nonatomic, strong) UIFont  *itemTitleFont UI_APPEARANCE_SELECTOR;// 按钮的标题字体
-@property(nonatomic, assign) CGFloat itemPaddingHorizontal UI_APPEARANCE_SELECTOR;// 按钮图片的左右间距（按钮宽度 = 图片宽度 + 左右间距 * 2），通常用来调整文字的宽度
+@property(nonatomic, assign) CGFloat itemPaddingHorizontal UI_APPEARANCE_SELECTOR;// 按钮内 imageView 的左右间距（按钮宽度 = 图片宽度 + 左右间距 * 2），通常用来调整文字的宽度
 @property(nonatomic, assign) CGFloat itemTitleMarginTop UI_APPEARANCE_SELECTOR;// 按钮标题距离文字之间的间距
 @property(nonatomic, assign) CGFloat itemMinimumMarginHorizontal UI_APPEARANCE_SELECTOR;// 按钮与按钮之间的最小间距
+@property(nonatomic, assign) BOOL automaticallyAdjustItemMargins UI_APPEARANCE_SELECTOR;// 是否要自动计算默认一行展示多少个 item，YES 表示尽量让每一行末尾露出半个 item 暗示后面还有内容，NO 表示直接根据 itemMinimumMarginHorizontal 来计算布局。默认为 YES。
 
 @property(nonatomic, strong) UIColor *cancelButtonBackgroundColor UI_APPEARANCE_SELECTOR;// 取消按钮的背景色
 @property(nonatomic, strong) UIColor *cancelButtonTitleColor UI_APPEARANCE_SELECTOR;// 取消按钮的标题颜色
@@ -67,6 +75,9 @@
 @property(nonatomic, assign) CGFloat cancelButtonMarginTop UI_APPEARANCE_SELECTOR;// 取消按钮距离内容面板的间距
 
 @property(nonatomic, weak) id<QMUIMoreOperationControllerDelegate> delegate;
+
+@property(nonatomic, strong, readonly) UIView *contentView;// 放 UIScrollView 的容器，与 cancelButton 区分开
+@property(nonatomic, strong, readonly) NSArray<UIScrollView *> *scrollViews;// 获取当前的所有 UIScrollView
 
 /// 取消按钮，如果不需要，则自行设置其 hidden 为 YES
 @property(nonatomic, strong, readonly) QMUIButton *cancelButton;
@@ -106,14 +117,14 @@
 
 @interface QMUIMoreOperationController (UIAppearance)
 
-+ (instancetype)appearance;
++ (nonnull instancetype)appearance;
 
 @end
 
 
 @interface QMUIMoreOperationItemView : QMUIButton
 
-@property(nonatomic, assign, readonly) NSIndexPath *indexPath;
+@property(nonatomic, strong, readonly) NSIndexPath *indexPath;
 @property(nonatomic, assign) NSInteger tag;
 
 + (instancetype)itemViewWithImage:(UIImage *)image

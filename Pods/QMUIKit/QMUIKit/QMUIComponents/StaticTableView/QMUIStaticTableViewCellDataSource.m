@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUIStaticTableViewCellDataSource.m
 //  qmui
 //
-//  Created by MoLice on 2017/6/20.
-//  Copyright © 2017年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 2017/6/20.
 //
 
 #import "QMUIStaticTableViewCellDataSource.h"
@@ -11,8 +18,9 @@
 #import "QMUIStaticTableViewCellData.h"
 #import "QMUITableViewCell.h"
 #import "UITableView+QMUIStaticCell.h"
-#import "NSObject+QMUI.h"
 #import <objc/runtime.h>
+#import "QMUILog.h"
+#import "QMUIMultipleDelegates.h"
 
 @interface QMUIStaticTableViewCellDataSource ()
 @end
@@ -56,13 +64,13 @@
 
 - (QMUIStaticTableViewCellData *)cellDataAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section >= self.cellDataSections.count) {
-        QMUILogInfo(@"cellDataWithIndexPath:%@, data not exist in section!", indexPath);
+        QMUILog(NSStringFromClass(self.class), @"cellDataWithIndexPath:%@, data not exist in section!", indexPath);
         return nil;
     }
     
     NSArray<QMUIStaticTableViewCellData *> *rowDatas = [self.cellDataSections objectAtIndex:indexPath.section];
     if (indexPath.row >= rowDatas.count) {
-        QMUILogInfo(@"cellDataWithIndexPath:%@, data not exist in row!", indexPath);
+        QMUILog(NSStringFromClass(self.class), @"cellDataWithIndexPath:%@, data not exist in row!", indexPath);
         return nil;
     }
     
@@ -120,6 +128,10 @@
     }
     
     [cell updateCellAppearanceWithIndexPath:indexPath];
+    
+    if (data.cellForRowBlock) {
+        data.cellForRowBlock(self.tableView, cell, data);
+    }
     
     return cell;
 }

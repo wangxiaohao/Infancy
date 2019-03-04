@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUINavigationTitleView.m
 //  qmui
 //
 //  Created by QMUI Team on 14-7-2.
-//  Copyright (c) 2014年 QMUI Team. All rights reserved.
 //
 
 #import "QMUINavigationTitleView.h"
@@ -23,7 +30,7 @@
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        ReplaceMethod([self class], @selector(layoutSubviews), @selector(titleView_navigationBarLayoutSubviews));
+        ExchangeImplementations([self class], @selector(layoutSubviews), @selector(titleView_navigationBarLayoutSubviews));
     });
 }
 
@@ -44,7 +51,7 @@
         }
         
         // iOS 11 之后（iOS 11 Beta 5 测试过） titleView 的布局发生了一些变化，如果不主动设置宽度，titleView 里的内容就可能无法完整展示
-        if (IOS_VERSION >= 11.0) {
+        if (@available(iOS 11, *)) {
             if (CGRectGetWidth(titleView.bounds) != titleViewSize.width) {
                 titleView.frame = CGRectSetWidth(titleView.frame, titleViewSize.width);
             }
@@ -103,18 +110,21 @@
         self.needsLoadingView = NO;
         self.loadingViewHidden = YES;
         self.needsAccessoryPlaceholderSpace = NO;
+        self.needsSubAccessoryPlaceholderSpace = NO;
         self.needsLoadingPlaceholderSpace = YES;
         self.accessoryType = QMUINavigationTitleViewAccessoryTypeNone;
         
         QMUINavigationTitleView *appearance = [QMUINavigationTitleView appearance];
+        self.maximumWidth = appearance.maximumWidth;
         self.loadingViewSize = appearance.loadingViewSize;
         self.loadingViewMarginRight = appearance.loadingViewMarginRight;
-        self.horizontalTitleFont = appearance.horizontalTitleFont;
-        self.horizontalSubtitleFont = appearance.horizontalSubtitleFont;
+        self.horizontalTitleFont = appearance.horizontalTitleFont ?: [UINavigationBar appearance].titleTextAttributes[NSFontAttributeName];
+        self.horizontalSubtitleFont = appearance.horizontalSubtitleFont ?: self.horizontalTitleFont;
         self.verticalTitleFont = appearance.verticalTitleFont;
         self.verticalSubtitleFont = appearance.verticalSubtitleFont;
         self.accessoryViewOffset = appearance.accessoryViewOffset;
-        self.tintColor = NavBarTitleColor;
+        self.subAccessoryViewOffset = appearance.subAccessoryViewOffset;
+        self.tintColor = QMUICMIActivated ? NavBarTitleColor : [UINavigationBar appearance].titleTextAttributes[NSForegroundColorAttributeName];
     }
     return self;
 }
@@ -149,7 +159,7 @@
 - (void)updateTitleLabelSize {
     if (self.titleLabel.text.length > 0) {
         // 这里用 CGSizeCeil 是特地保证 titleView 的 sizeThatFits 计算出来宽度是 pt 取整，这样在 layoutSubviews 我们以 px 取整时，才能保证不会出现水平居中时出现半像素的问题，然后由于我们对半像素会认为一像素，所以导致总体宽度多了一像素，从而导致文字布局可能出现缩略...
-        self.titleLabelSize = CGSizeCeil([self.titleLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)]);
+        self.titleLabelSize = CGSizeCeil([self.titleLabel sizeThatFits:CGSizeMax]);
     } else {
         self.titleLabelSize = CGSizeZero;
     }
@@ -158,7 +168,7 @@
 - (void)updateSubtitleLabelSize {
     if (self.subtitleLabel.text.length > 0) {
         // 这里用 CGSizeCeil 是特地保证 titleView 的 sizeThatFits 计算出来宽度是 pt 取整，这样在 layoutSubviews 我们以 px 取整时，才能保证不会出现水平居中时出现半像素的问题，然后由于我们对半像素会认为一像素，所以导致总体宽度多了一像素，从而导致文字布局可能出现缩略...
-        self.subtitleLabelSize = CGSizeCeil([self.subtitleLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)]);
+        self.subtitleLabelSize = CGSizeCeil([self.subtitleLabel sizeThatFits:CGSizeMax]);
     } else {
         self.subtitleLabelSize = CGSizeZero;
     }
@@ -183,8 +193,20 @@
     return CGSizeZero;
 }
 
+- (CGSize)subAccessorySpacingSize {
+    if (self.subAccessoryView) {
+        UIView *view = self.subAccessoryView;
+        return CGSizeMake(CGRectGetWidth(view.bounds) + self.subAccessoryViewOffset.x, CGRectGetHeight(view.bounds));
+    }
+    return CGSizeZero;
+}
+
 - (CGSize)accessorySpacingSizeIfNeedesPlaceholder {
     return CGSizeMake([self accessorySpacingSize].width * (self.needsAccessoryPlaceholderSpace ? 2 : 1), [self accessorySpacingSize].height);
+}
+
+- (CGSize)subAccessorySpacingSizeIfNeedesPlaceholder {
+    return CGSizeMake([self subAccessorySpacingSize].width * (self.needsSubAccessoryPlaceholderSpace ? 2 : 1), [self subAccessorySpacingSize].height);
 }
 
 - (UIEdgeInsets)titleEdgeInsetsIfShowingTitleLabel {
@@ -205,6 +227,9 @@
         firstLineWidth += [self accessorySpacingSizeIfNeedesPlaceholder].width;
         
         CGFloat secondLineWidth = self.subtitleLabelSize.width + UIEdgeInsetsGetHorizontalValue(self.subtitleEdgeInsetsIfShowingSubtitleLabel);
+        if (self.subtitleLabelSize.width > 0 && self.subAccessoryView && !self.subAccessoryView.hidden) {
+            secondLineWidth += [self subAccessorySpacingSizeIfNeedesPlaceholder].width;
+        }
         
         size.width = fmax(firstLineWidth, secondLineWidth);
         
@@ -223,6 +248,7 @@
 
 - (CGSize)sizeThatFits:(CGSize)size {
     CGSize resultSize = [self contentSize];
+    resultSize.width = fmin(resultSize.width, self.maximumWidth);
     return resultSize;
 }
 
@@ -261,14 +287,15 @@
     // 计算loading占的单边宽度
     CGFloat loadingViewSpace = [self loadingViewSpacingSize].width;
     
-    // 获取当前accessoryView
+    // 获取当前 accessoryView
     UIView *accessoryView = self.accessoryView ?: self.accessoryTypeView;
     
-    // 计算accessoryView占的单边宽度
+    // 计算 accessoryView 占的单边宽度
     CGFloat accessoryViewSpace = [self accessorySpacingSize].width;
     
     BOOL isTitleLabelShowing = self.titleLabel.text.length > 0;
     BOOL isSubtitleLabelShowing = self.subtitleLabel.text.length > 0;
+    BOOL isSubAccessoryViewShowing = isSubtitleLabelShowing && self.subAccessoryView && !self.subAccessoryView.hidden;
     UIEdgeInsets titleEdgeInsets = self.titleEdgeInsetsIfShowingTitleLabel;
     UIEdgeInsets subtitleEdgeInsets = self.subtitleEdgeInsetsIfShowingSubtitleLabel;
     
@@ -293,7 +320,29 @@
             self.titleLabel.frame = CGRectZero;
         }
         if (isSubtitleLabelShowing) {
-            self.subtitleLabel.frame = CGRectFlatMake(subtitleEdgeInsets.left, (isTitleLabelShowing ? CGRectGetMaxY(self.titleLabel.frame) + titleEdgeInsets.bottom : 0) + subtitleEdgeInsets.top, maxSize.width - UIEdgeInsetsGetHorizontalValue(subtitleEdgeInsets), self.subtitleLabelSize.height);
+            [self.subtitleLabel sizeToFit];
+            CGFloat subtitleMinX = subtitleEdgeInsets.left;
+            CGFloat subtitleWidth = maxSize.width - UIEdgeInsetsGetHorizontalValue(subtitleEdgeInsets);
+            
+            if (isSubAccessoryViewShowing) {
+                if (self.needsSubAccessoryPlaceholderSpace) {
+                    // 副标题居中，accessoryView 在右边
+                    CGFloat subtitleMaxWidth = subtitleWidth - [self subAccessorySpacingSizeIfNeedesPlaceholder].width;
+                    subtitleWidth = fmin(CGRectGetWidth(self.subtitleLabel.bounds), subtitleMaxWidth);
+                    subtitleMinX = (CGRectGetWidth(self.bounds) - subtitleWidth) / 2.0;
+                } else {
+                    // 整体居中
+                    CGFloat subtitleMaxWidth = subtitleWidth - [self subAccessorySpacingSize].width;
+                    subtitleWidth = fmin(CGRectGetWidth(self.subtitleLabel.bounds), subtitleMaxWidth);
+                    subtitleMinX = (CGRectGetWidth(self.bounds) - subtitleWidth - [self subAccessorySpacingSize].width) / 2.0;
+                }
+            }
+            
+            self.subtitleLabel.frame = CGRectFlatMake(subtitleMinX, (isTitleLabelShowing ? CGRectGetMaxY(self.titleLabel.frame) + titleEdgeInsets.bottom : 0) + subtitleEdgeInsets.top, subtitleWidth, self.subtitleLabelSize.height);
+            
+            if (isSubAccessoryViewShowing) {
+                self.subAccessoryView.frame = CGRectSetXY(self.subAccessoryView.frame, CGRectGetMaxX(self.subtitleLabel.frame) + self.subAccessoryViewOffset.x, CGRectGetMinYVerticallyCenter(self.subtitleLabel.frame, self.subAccessoryView.frame) + self.subAccessoryViewOffset.y);
+            }
         } else {
             self.subtitleLabel.frame = CGRectZero;
         }
@@ -334,6 +383,11 @@
 
 #pragma mark - setter / getter
 
+- (void)setMaximumWidth:(CGFloat)maximumWidth {
+    _maximumWidth = maximumWidth;
+    [self refreshLayout];
+}
+
 - (void)setContentHorizontalAlignment:(UIControlContentHorizontalAlignment)contentHorizontalAlignment {
     [super setContentHorizontalAlignment:contentHorizontalAlignment];
     [self refreshLayout];
@@ -351,6 +405,16 @@
 
 - (void)setAccessoryViewOffset:(CGPoint)accessoryViewOffset {
     _accessoryViewOffset = accessoryViewOffset;
+    [self refreshLayout];
+}
+
+- (void)setNeedsSubAccessoryPlaceholderSpace:(BOOL)needsSubAccessoryPlaceholderSpace {
+    _needsSubAccessoryPlaceholderSpace = needsSubAccessoryPlaceholderSpace;
+    [self refreshLayout];
+}
+
+- (void)setSubAccessoryViewOffset:(CGPoint)subAccessoryViewOffset {
+    _subAccessoryViewOffset = subAccessoryViewOffset;
     [self refreshLayout];
 }
 
@@ -416,6 +480,7 @@
     _subtitle = subtitle;
     self.subtitleLabel.text = subtitle;
     [self updateSubtitleLabelSize];
+    [self updateSubAccessoryViewHidden];
     [self refreshLayout];
 }
 
@@ -468,6 +533,29 @@
         [self addSubview:self.accessoryView];
     }
     [self refreshLayout];
+}
+
+- (void)setSubAccessoryView:(UIView *)subAccessoryView {
+    if (_subAccessoryView != subAccessoryView) {
+        [_subAccessoryView removeFromSuperview];
+        _subAccessoryView = nil;
+    }
+    if (subAccessoryView) {
+        _subAccessoryView = subAccessoryView;
+        [self.subAccessoryView sizeToFit];
+        [self addSubview:self.subAccessoryView];
+    }
+    
+    [self updateSubAccessoryViewHidden];
+    [self refreshLayout];
+}
+
+- (void)updateSubAccessoryViewHidden {
+    if (self.subAccessoryView && self.subtitle.length && self.style == QMUINavigationTitleViewStyleSubTitleVertical) {
+        self.subAccessoryView.hidden = NO;
+    } else {
+        self.subAccessoryView.hidden = YES;
+    }
 }
 
 - (void)setNeedsLoadingView:(BOOL)needsLoadingView {
@@ -534,6 +622,8 @@
         self.subtitleLabel.font = self.horizontalSubtitleFont;
         [self updateSubtitleLabelSize];
     }
+    
+    [self updateSubAccessoryViewHidden];
     [self refreshLayout];
 }
 
@@ -579,6 +669,7 @@
 
 + (void)setDefaultAppearance {
     QMUINavigationTitleView *appearance = [QMUINavigationTitleView appearance];
+    appearance.maximumWidth = CGFLOAT_MAX;
     appearance.loadingViewSize = CGSizeMake(18, 18);
     appearance.loadingViewMarginRight = 3;
     appearance.horizontalTitleFont = NavBarTitleFont;
@@ -586,6 +677,7 @@
     appearance.verticalTitleFont = UIFontMake(15);
     appearance.verticalSubtitleFont = UIFontLightMake(12);
     appearance.accessoryViewOffset = CGPointMake(3, 0);
+    appearance.subAccessoryViewOffset = CGPointMake(3, 0);
     appearance.titleEdgeInsets = UIEdgeInsetsZero;
     appearance.subtitleEdgeInsets = UIEdgeInsetsZero;
 }

@@ -1,50 +1,51 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUICommonDefines.h
 //  qmui
 //
 //  Created by QMUI Team on 14-6-23.
-//  Copyright (c) 2014年 QMUI Team. All rights reserved.
 //
 
+#ifndef QMUICommonDefines_h
+#define QMUICommonDefines_h
+
 #import <UIKit/UIKit.h>
-#import <objc/runtime.h>
 #import "QMUIHelper.h"
 
 #pragma mark - 变量-编译相关
 
-// 判断当前是否debug编译模式
+/// 判断当前是否debug编译模式
 #ifdef DEBUG
 #define IS_DEBUG YES
 #else
 #define IS_DEBUG NO
 #endif
 
-
-/// 判断当前编译使用的 Base SDK 版本是否为 iOS 8.0 及以上
-
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
-#define IOS8_SDK_ALLOWED YES
-#endif
-
-
-/// 判断当前编译使用的 Base SDK 版本是否为 iOS 9.0 及以上
-
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
+/// 当前编译使用的 Base SDK 版本为 iOS 9.0 及以上
 #define IOS9_SDK_ALLOWED YES
 #endif
 
-
-/// 判断当前编译使用的 Base SDK 版本是否为 iOS 10.0 及以上
-
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 100000
+/// 当前编译使用的 Base SDK 版本为 iOS 10.0 及以上
 #define IOS10_SDK_ALLOWED YES
 #endif
 
-
-/// 判断当前编译使用的 Base SDK 版本是否为 iOS 11.0 及以上
-
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
+/// 当前编译使用的 Base SDK 版本为 iOS 11.0 及以上
 #define IOS11_SDK_ALLOWED YES
+#endif
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000
+/// 当前编译使用的 Base SDK 版本为 iOS 12.0 及以上
+#define IOS12_SDK_ALLOWED YES
 #endif
 
 #pragma mark - Clang
@@ -52,7 +53,7 @@
 #define ArgumentToString(macro) #macro
 #define ClangWarningConcat(warning_name) ArgumentToString(clang diagnostic ignored warning_name)
 
-// 参数可直接传入 clang 的 warning 名，warning 列表参考：https://clang.llvm.org/docs/DiagnosticsReference.html
+/// 参数可直接传入 clang 的 warning 名，warning 列表参考：https://clang.llvm.org/docs/DiagnosticsReference.html
 #define BeginIgnoreClangWarning(warningName) _Pragma("clang diagnostic push") _Pragma(ClangWarningConcat(#warningName))
 #define EndIgnoreClangWarning _Pragma("clang diagnostic pop")
 
@@ -68,104 +69,130 @@
 
 #pragma mark - 变量-设备相关
 
-// 设备类型
+/// 设备类型
 #define IS_IPAD [QMUIHelper isIPad]
-#define IS_IPAD_PRO [QMUIHelper isIPadPro]
 #define IS_IPOD [QMUIHelper isIPod]
 #define IS_IPHONE [QMUIHelper isIPhone]
 #define IS_SIMULATOR [QMUIHelper isSimulator]
 
-// 操作系统版本号，只获取第二级的版本号，例如 10.3.1 只会得到 10.3
+/// 操作系统版本号，只获取第二级的版本号，例如 10.3.1 只会得到 10.3
 #define IOS_VERSION ([[[UIDevice currentDevice] systemVersion] doubleValue])
 
-// 是否横竖屏
-// 用户界面横屏了才会返回YES
+/// 数字形式的操作系统版本号，可直接用于大小比较；如 110205 代表 11.2.5 版本；根据 iOS 规范，版本号最多可能有3位
+#define IOS_VERSION_NUMBER [QMUIHelper numbericOSVersion]
+
+/// 是否横竖屏
+/// 用户界面横屏了才会返回YES
 #define IS_LANDSCAPE UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])
-// 无论支不支持横屏，只要设备横屏了，就会返回YES
+/// 无论支不支持横屏，只要设备横屏了，就会返回YES
 #define IS_DEVICE_LANDSCAPE UIDeviceOrientationIsLandscape([[UIDevice currentDevice] orientation])
 
-// 屏幕宽度，会根据横竖屏的变化而变化
+/// 屏幕宽度，会根据横竖屏的变化而变化
 #define SCREEN_WIDTH ([[UIScreen mainScreen] bounds].size.width)
 
-// 屏幕宽度，跟横竖屏无关
-#define DEVICE_WIDTH (IS_LANDSCAPE ? [[UIScreen mainScreen] bounds].size.height : [[UIScreen mainScreen] bounds].size.width)
-
-// 屏幕高度，会根据横竖屏的变化而变化
+/// 屏幕高度，会根据横竖屏的变化而变化
 #define SCREEN_HEIGHT ([[UIScreen mainScreen] bounds].size.height)
 
-// 屏幕高度，跟横竖屏无关
+/// 屏幕宽度，跟横竖屏无关
+#define DEVICE_WIDTH (IS_LANDSCAPE ? [[UIScreen mainScreen] bounds].size.height : [[UIScreen mainScreen] bounds].size.width)
+
+/// 屏幕高度，跟横竖屏无关
 #define DEVICE_HEIGHT (IS_LANDSCAPE ? [[UIScreen mainScreen] bounds].size.width : [[UIScreen mainScreen] bounds].size.height)
 
-// 设备屏幕尺寸
+/// 是否全面屏设备
+#define IS_NOTCHED_SCREEN [QMUIHelper isNotchedScreen]
+/// iPhone XS Max
+#define IS_65INCH_SCREEN [QMUIHelper is65InchScreen]
+/// iPhone XR
+#define IS_61INCH_SCREEN [QMUIHelper is61InchScreen]
+/// iPhone X/XS
 #define IS_58INCH_SCREEN [QMUIHelper is58InchScreen]
+/// iPhone 6/7/8 Plus
 #define IS_55INCH_SCREEN [QMUIHelper is55InchScreen]
+/// iPhone 6/7/8
 #define IS_47INCH_SCREEN [QMUIHelper is47InchScreen]
+/// iPhone 5/5S/SE
 #define IS_40INCH_SCREEN [QMUIHelper is40InchScreen]
+/// iPhone 4/4S
 #define IS_35INCH_SCREEN [QMUIHelper is35InchScreen]
+/// iPhone 4/4S/5/5S/SE
+#define IS_320WIDTH_SCREEN (IS_35INCH_SCREEN || IS_40INCH_SCREEN)
 
-// 是否Retina
+/// 是否Retina
 #define IS_RETINASCREEN ([[UIScreen mainScreen] scale] >= 2.0)
 
-// 是否放大模式（iPhone 6及以上的设备支持放大模式）
+/// 是否放大模式（iPhone 6及以上的设备支持放大模式）
 #define IS_ZOOMEDMODE ([[UIScreen mainScreen] respondsToSelector:@selector(nativeScale)] ? (ScreenNativeScale > ScreenScale) : NO)
 
 #pragma mark - 变量-布局相关
 
-// bounds && nativeBounds / scale && nativeScale
+/// 获取一个像素
+#define PixelOne [QMUIHelper pixelOne]
+
+/// bounds && nativeBounds / scale && nativeScale
 #define ScreenBoundsSize ([[UIScreen mainScreen] bounds].size)
 #define ScreenNativeBoundsSize ([[UIScreen mainScreen] nativeBounds].size)
 #define ScreenScale ([[UIScreen mainScreen] scale])
 #define ScreenNativeScale ([[UIScreen mainScreen] nativeScale])
 
-// 状态栏高度(来电等情况下，状态栏高度会发生变化，所以应该实时计算)
-#define StatusBarHeight ([[UIApplication sharedApplication] statusBarFrame].size.height)
+/// toolBar相关frame
+#define ToolBarHeight (IS_IPAD ? (IS_NOTCHED_SCREEN ? 65 : 50) : (IS_LANDSCAPE ? PreferredValueForVisualDevice(44, 32) : 44) + PreferredValueForNotchedDevice(39, 0))
 
-// navigationBar相关frame
-#define NavigationBarHeight (IS_LANDSCAPE ? PreferredVarForDevices(44, 32, 32, 32) : 44)
+/// tabBar相关frame
+#define TabBarHeight (IS_IPAD ? (IS_NOTCHED_SCREEN ? 65 : 50) : PreferredValueForNotchedDevice(IS_LANDSCAPE ? 32 : 49, 49) + SafeAreaInsetsConstantForDeviceWithNotch.bottom)
 
-// toolBar相关frame
-#define ToolBarHeight (IS_LANDSCAPE ? PreferredVarForUniversalDevicesIncludingIPhoneX(44, 44, 53, 32, 32, 32) : PreferredVarForUniversalDevicesIncludingIPhoneX(44, 44, 83, 44, 44, 44))
+/// 状态栏高度(来电等情况下，状态栏高度会发生变化，所以应该实时计算)
+#define StatusBarHeight ([UIApplication sharedApplication].statusBarHidden ? 0 : [[UIApplication sharedApplication] statusBarFrame].size.height)
 
-// tabBar相关frame
-#define TabBarHeight (IS_LANDSCAPE ? PreferredVarForUniversalDevicesIncludingIPhoneX(49, 49, 53, 32, 32, 32) : PreferredVarForUniversalDevicesIncludingIPhoneX(49, 49, 83, 49, 49, 49))
+/// 状态栏高度(如果状态栏不可见，也会返回一个普通状态下可见的高度)
+#define StatusBarHeightConstant ([UIApplication sharedApplication].statusBarHidden ? (IS_IPAD ? (IS_NOTCHED_SCREEN ? 24 : 20) : PreferredValueForNotchedDevice(IS_LANDSCAPE ? 0 : 44, 20)) : [[UIApplication sharedApplication] statusBarFrame].size.height)
 
-// 保护 iPhoneX 安全区域的 insets
-#define IPhoneXSafeAreaInsets [QMUIHelper safeAreaInsetsForIPhoneX]
+/// navigationBar 的静态高度
+#define NavigationBarHeight (IS_LANDSCAPE ? PreferredValueForVisualDevice(44, 32) : 44)
 
-// 获取顶部导航栏占位高度，从而在布局 subviews 时可以当成 minY 参考
-// 注意，以下两个宏已废弃，请尽量使用 UIViewController (QMUI) qmui_navigationBarMaxYInViewCoordinator 代替
+/// 代表(导航栏+状态栏)，这里用于获取其高度
+/// @warn 如果是用于 viewController，请使用 UIViewController(QMUI) qmui_navigationBarMaxYInViewCoordinator 代替
 #define NavigationContentTop (StatusBarHeight + NavigationBarHeight)
-#define NavigationContentStaticTop NavigationContentTop
 
-// 获取一个像素
-#define PixelOne [QMUIHelper pixelOne]
+/// 同上，这里用于获取它的静态常量值
+#define NavigationContentTopConstant (StatusBarHeightConstant + NavigationBarHeight)
 
-// 获取最合适的适配值，默认以varFor55Inch为准，也即偏向大屏，特殊的，iPhone X 虽然英寸值更大，但由于宽度与 47inch 相等，因此布局上使用与 47inch 一样的值
-#define PreferredVarForDevices(varFor55Inch, varFor47or58Inch, varFor40Inch, varFor35Inch) PreferredVarForUniversalDevices(varFor55Inch, varFor55Inch, varFor47or58Inch, varFor40Inch, varFor35Inch)
+/// iPhoneX 系列全面屏手机的安全区域的静态值
+#define SafeAreaInsetsConstantForDeviceWithNotch [QMUIHelper safeAreaInsetsForDeviceWithNotch]
 
-// 同上，加多一个iPad的参数
-#define PreferredVarForUniversalDevices(varForPad, varFor55Inch, varFor47or58Inch, varFor40Inch, varFor35Inch) PreferredVarForUniversalDevicesIncludingIPhoneX(varForPad, varFor55Inch, varFor47or58Inch, varFor47or58Inch, varFor40Inch, varFor35Inch)
+/// 按屏幕宽度来区分不同 iPhone 尺寸，iPhone XS Max/XR/Plus 归为一类，iPhone X/8/7/6 归为一类。
+/// iPad 也会视为最大的屏幕宽度来处理
+#define PreferredValueForiPhone(_65or61or55inch, _47or58inch, _40inch, _35inch) PreferredValueForDeviceIncludingiPad(_65or61or55inch, _65or61or55inch, _47or58inch, _40inch, _35inch)
 
-// 同上，包含 iPhoneX
-#define PreferredVarForUniversalDevicesIncludingIPhoneX(varForPad, varFor55Inch, varFor58Inch, varFor47Inch, varFor40Inch, varFor35Inch) (IS_IPAD ? varForPad : (IS_35INCH_SCREEN ? varFor35Inch : (IS_40INCH_SCREEN ? varFor40Inch : (IS_47INCH_SCREEN ? varFor47Inch : (IS_55INCH_SCREEN ? varFor55Inch : varFor58Inch)))))
+/// 同上，单独将 iPad 区分对待
+#define PreferredValueForDeviceIncludingiPad(_iPad, _65or61or55inch, _47or58inch, _40inch, _35inch) PreferredValueForAll(_iPad, _65or61or55inch, _65or61or55inch, _47or58inch, _65or61or55inch, _47or58inch, _40inch, _35inch)
+
+/// 区分全面屏（iPhone X 系列）和非全面屏
+#define PreferredValueForNotchedDevice(_notchedDevice, _otherDevice) ([QMUIHelper isNotchedScreen] ? _notchedDevice : _otherDevice)
+
+/// 将所有屏幕按照宽松/紧凑分类，其中 iPad、iPhone XS Max/XR/Plus 均为宽松屏幕，但开启了放大模式的设备均会视为紧凑屏幕
+#define PreferredValueForVisualDevice(_regular, _compact) ([QMUIHelper isRegularScreen] ? _regular : _compact)
+
+/// 区分全部的设备类型
+#define PreferredValueForAll(_iPad, _65inch, _61inch, _58inch, _55inch, _47inch, _40inch, _35inch) (IS_IPAD ? _iPad : (IS_35INCH_SCREEN ? _35inch : (IS_40INCH_SCREEN ? _40inch : ((IS_47INCH_SCREEN || (IS_55INCH_SCREEN && IS_ZOOMEDMODE)) ? _47inch : (IS_55INCH_SCREEN ? _55inch : ((IS_58INCH_SCREEN || ((IS_61INCH_SCREEN || IS_65INCH_SCREEN) && IS_ZOOMEDMODE)) ? _58inch : (IS_61INCH_SCREEN ? _61inch : _65inch)))))))
 
 #pragma mark - 方法-创建器
 
-// 使用文件名(不带后缀名)创建一个UIImage对象，会被系统缓存，适用于大量复用的小资源图
-// 使用这个 API 而不是 imageNamed: 是因为后者在 iOS 8 下反而存在性能问题（by molice 不确定 iOS 9 及以后的版本是否还有这个问题）
-#define UIImageMake(img) [UIImage imageNamed:img inBundle:nil compatibleWithTraitCollection:nil]
+#define CGSizeMax CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)
 
-// 使用文件名(不带后缀名，仅限png)创建一个UIImage对象，不会被系统缓存，用于不被复用的图片，特别是大图
+#define UIImageMake(img) [UIImage imageNamed:img]
+
+/// 使用文件名(不带后缀名，仅限png)创建一个UIImage对象，不会被系统缓存，用于不被复用的图片，特别是大图
 #define UIImageMakeWithFile(name) UIImageMakeWithFileAndSuffix(name, @"png")
 #define UIImageMakeWithFileAndSuffix(name, suffix) [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.%@", [[NSBundle mainBundle] resourcePath], name, suffix]]
 
-// 字体相关的宏，用于快速创建一个字体对象，更多创建宏可查看 UIFont+QMUI.h
+/// 字体相关的宏，用于快速创建一个字体对象，更多创建宏可查看 UIFont+QMUI.h
 #define UIFontMake(size) [UIFont systemFontOfSize:size]
-#define UIFontItalicMake(size) [UIFont italicSystemFontOfSize:size] // 斜体只对数字和字母有效，中文无效
+#define UIFontItalicMake(size) [UIFont italicSystemFontOfSize:size] /// 斜体只对数字和字母有效，中文无效
 #define UIFontBoldMake(size) [UIFont boldSystemFontOfSize:size]
 #define UIFontBoldWithFont(_font) [UIFont boldSystemFontOfSize:_font.pointSize]
 
-// UIColor 相关的宏，用于快速创建一个 UIColor 对象，更多创建的宏可查看 UIColor+QMUI.h
+/// UIColor 相关的宏，用于快速创建一个 UIColor 对象，更多创建的宏可查看 UIColor+QMUI.h
 #define UIColorMake(r, g, b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1]
 #define UIColorMakeWithRGBA(r, g, b, a) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:a/1.0]
 
@@ -180,36 +207,21 @@
 #define QMUIViewAnimationOptionsCurveOut (7<<16)
 #define QMUIViewAnimationOptionsCurveIn (8<<16)
 
+#pragma mark - 无障碍访问
+CG_INLINE void
+AddAccessibilityLabel(NSObject *obj, NSString *label) {
+    obj.accessibilityLabel = label;
+}
+
+CG_INLINE void
+AddAccessibilityHint(NSObject *obj, NSString *hint) {
+    obj.accessibilityHint = hint;
+}
+
 
 #pragma mark - 其他
 
 #define StringFromBOOL(_flag) (_flag ? @"YES" : @"NO")
-
-/// 以下是 QMUI 提供的打 log 的方法，仅用于 QMUI 项目内，业务项目可通过 QMUIHelperDelegate 来自定义 log 的输出方式（例如 Release 可将 log 记录到自己的日志文件里）
-/// 按照重要程度从低到高排列是：info、default、warn，每一个级别都可以通过修改配置表的开关来控制这个级别的 log 是否要输出
-/// QMUILog 默认会自动将当前打 log 的方法名记录下来，所以你的 log 内容可以不需要包含这部分的内容
-#define QMUILog(...) [[QMUIHelper sharedInstance] printLogWithCalledFunction:__FUNCTION__ level:QMUILogLevelDefault log:__VA_ARGS__]
-#define QMUILogInfo(...) [[QMUIHelper sharedInstance] printLogWithCalledFunction:__FUNCTION__ level:QMUILogLevelInfo log:__VA_ARGS__]
-#define QMUILogWarn(...) [[QMUIHelper sharedInstance] printLogWithCalledFunction:__FUNCTION__ level:QMUILogLevelWarn log:__VA_ARGS__]
-
-#pragma mark - 方法-C对象、结构操作
-
-CG_INLINE BOOL
-ReplaceMethod(Class _class, SEL _originSelector, SEL _newSelector) {
-    Method oriMethod = class_getInstanceMethod(_class, _originSelector);
-    Method newMethod = class_getInstanceMethod(_class, _newSelector);
-    if (!newMethod) {
-        // class 里不存在该方法的实现
-        return NO;
-    }
-    BOOL isAddedMethod = class_addMethod(_class, _originSelector, method_getImplementation(newMethod), method_getTypeEncoding(newMethod));
-    if (isAddedMethod) {
-        class_replaceMethod(_class, _newSelector, method_getImplementation(oriMethod), method_getTypeEncoding(oriMethod));
-    } else {
-        method_exchangeImplementations(oriMethod, newMethod);
-    }
-    return YES;
-}
 
 #pragma mark - CGFloat
 
@@ -230,7 +242,7 @@ removeFloatMin(CGFloat floatValue) {
 CG_INLINE CGFloat
 flatSpecificScale(CGFloat floatValue, CGFloat scale) {
     floatValue = removeFloatMin(floatValue);
-    scale = scale == 0 ? ScreenScale : scale;
+    scale = scale ?: ScreenScale;
     CGFloat flattedValue = ceil(floatValue * scale) / scale;
     return flattedValue;
 }
@@ -271,12 +283,13 @@ betweenOrEqual(CGFloat minimumValue, CGFloat value, CGFloat maximumValue) {
  *  例如 CGFloatToFixed(0.3333, 2) 会返回 0.33，而 CGFloatToFixed(0.6666, 2) 会返回 0.67
  *
  *  @warning 参数类型为 CGFloat，也即意味着不管传进来的是 float 还是 double 最终都会被强制转换成 CGFloat 再做计算
+ *  @warning 该方法无法解决浮点数精度运算的问题
  */
 CG_INLINE CGFloat
 CGFloatToFixed(CGFloat value, NSUInteger precision) {
     NSString *formatString = [NSString stringWithFormat:@"%%.%@f", @(precision)];
     NSString *toString = [NSString stringWithFormat:formatString, value];
-    #if defined(__LP64__) && __LP64__
+    #if CGFLOAT_IS_DOUBLE
     CGFloat result = [toString doubleValue];
     #else
     CGFloat result = [toString floatValue];
@@ -288,6 +301,12 @@ CGFloatToFixed(CGFloat value, NSUInteger precision) {
 CG_INLINE CGFloat
 CGFloatGetCenter(CGFloat parent, CGFloat child) {
     return flat((parent - child) / 2.0);
+}
+
+/// 检测某个数值如果为 NaN 则将其转换为 0，避免布局中出现 crash
+CG_INLINE CGFloat
+CGFloatSafeValue(CGFloat value) {
+    return isnan(value) ? 0 : value;
 }
 
 #pragma mark - CGPoint
@@ -382,13 +401,31 @@ UIEdgeInsetsRemoveFloatMin(UIEdgeInsets insets) {
 
 #pragma mark - CGSize
 
-/// 判断一个size是否为空（宽或高为0）
+/// 判断一个 CGSize 是否存在 NaN
+CG_INLINE BOOL
+CGSizeIsNaN(CGSize size) {
+    return isnan(size.width) || isnan(size.height);
+}
+
+/// 判断一个 CGSize 是否存在 infinite
+CG_INLINE BOOL
+CGSizeIsInf(CGSize size) {
+    return isinf(size.width) || isinf(size.height);
+}
+
+/// 判断一个 CGSize 是否为空（宽或高为0）
 CG_INLINE BOOL
 CGSizeIsEmpty(CGSize size) {
     return size.width <= 0 || size.height <= 0;
 }
 
-/// 将一个CGSize像素对齐
+/// 判断一个 CGSize 是否合法（例如不带无穷大的值、不带非法数字）
+CG_INLINE BOOL
+CGSizeIsValidated(CGSize size) {
+    return !CGSizeIsEmpty(size) && !CGSizeIsInf(size) && !CGSizeIsNaN(size);
+}
+
+/// 将一个 CGSize 像素对齐
 CG_INLINE CGSize
 CGSizeFlatted(CGSize size) {
     return CGSizeMake(flat(size.width), flat(size.height));
@@ -420,7 +457,7 @@ CGSizeRemoveFloatMin(CGSize size) {
 
 #pragma mark - CGRect
 
-/// 判断一个 CGRect 是否存在NaN
+/// 判断一个 CGRect 是否存在 NaN
 CG_INLINE BOOL
 CGRectIsNaN(CGRect rect) {
     return isnan(rect.origin.x) || isnan(rect.origin.y) || isnan(rect.size.width) || isnan(rect.size.height);
@@ -438,6 +475,12 @@ CGRectIsValidated(CGRect rect) {
     return !CGRectIsNull(rect) && !CGRectIsInfinite(rect) && !CGRectIsNaN(rect) && !CGRectIsInf(rect);
 }
 
+/// 检测某个 CGRect 如果存在数值为 NaN 的则将其转换为 0，避免布局中出现 crash
+CG_INLINE CGRect
+CGRectSafeValue(CGRect rect) {
+    return CGRectMake(CGFloatSafeValue(CGRectGetMinX(rect)), CGFloatSafeValue(CGRectGetMinY(rect)), CGFloatSafeValue(CGRectGetWidth(rect)), CGFloatSafeValue(CGRectGetHeight(rect)));
+}
+
 /// 创建一个像素对齐的CGRect
 CG_INLINE CGRect
 CGRectFlatMake(CGFloat x, CGFloat y, CGFloat width, CGFloat height) {
@@ -448,6 +491,37 @@ CGRectFlatMake(CGFloat x, CGFloat y, CGFloat width, CGFloat height) {
 CG_INLINE CGRect
 CGRectFlatted(CGRect rect) {
     return CGRectMake(flat(rect.origin.x), flat(rect.origin.y), flat(rect.size.width), flat(rect.size.height));
+}
+
+/// 计算目标点 targetPoint 围绕坐标点 coordinatePoint 通过 transform 之后此点的坐标
+CG_INLINE CGPoint
+CGPointApplyAffineTransformWithCoordinatePoint(CGPoint coordinatePoint, CGPoint targetPoint, CGAffineTransform t) {
+    CGPoint p;
+    p.x = (targetPoint.x - coordinatePoint.x) * t.a + (targetPoint.y - coordinatePoint.y) * t.c + coordinatePoint.x;
+    p.y = (targetPoint.x - coordinatePoint.x) * t.b + (targetPoint.y - coordinatePoint.y) * t.d + coordinatePoint.y;
+    p.x += t.tx;
+    p.y += t.ty;
+    return p;
+}
+
+/// 系统的 CGRectApplyAffineTransform 只会按照 anchorPoint 为 (0, 0) 的方式去计算，但通常情况下我们面对的是 UIView/CALayer，它们默认的 anchorPoint 为 (.5, .5)，所以增加这个函数，在计算 transform 时可以考虑上 anchorPoint 的影响
+CG_INLINE CGRect
+CGRectApplyAffineTransformWithAnchorPoint(CGRect rect, CGAffineTransform t, CGPoint anchorPoint) {
+    CGFloat width = CGRectGetWidth(rect);
+    CGFloat height = CGRectGetHeight(rect);
+    CGPoint oPoint = CGPointMake(rect.origin.x + width * anchorPoint.x, rect.origin.y + height * anchorPoint.y);
+    CGPoint top_left = CGPointApplyAffineTransformWithCoordinatePoint(oPoint, CGPointMake(rect.origin.x, rect.origin.y), t);
+    CGPoint bottom_left = CGPointApplyAffineTransformWithCoordinatePoint(oPoint, CGPointMake(rect.origin.x, rect.origin.y + height), t);
+    CGPoint top_right = CGPointApplyAffineTransformWithCoordinatePoint(oPoint, CGPointMake(rect.origin.x + width, rect.origin.y), t);
+    CGPoint bottom_right = CGPointApplyAffineTransformWithCoordinatePoint(oPoint, CGPointMake(rect.origin.x + width, rect.origin.y + height), t);
+    CGFloat minX = MIN(MIN(MIN(top_left.x, bottom_left.x), top_right.x), bottom_right.x);
+    CGFloat maxX = MAX(MAX(MAX(top_left.x, bottom_left.x), top_right.x), bottom_right.x);
+    CGFloat minY = MIN(MIN(MIN(top_left.y, bottom_left.y), top_right.y), bottom_right.y);
+    CGFloat maxY = MAX(MAX(MAX(top_left.y, bottom_left.y), top_right.y), bottom_right.y);
+    CGFloat newWidth = maxX - minX;
+    CGFloat newHeight = maxY - minY;
+    CGRect result = CGRectMake(minX, minY, newWidth, newHeight);
+    return result;
 }
 
 /// 为一个CGRect叠加scale计算
@@ -567,12 +641,18 @@ CGRectSetXY(CGRect rect, CGFloat x, CGFloat y) {
 
 CG_INLINE CGRect
 CGRectSetWidth(CGRect rect, CGFloat width) {
+    if (width < 0) {
+        return rect;
+    }
     rect.size.width = flat(width);
     return rect;
 }
 
 CG_INLINE CGRect
 CGRectSetHeight(CGRect rect, CGFloat height) {
+    if (height < 0) {
+        return rect;
+    }
     rect.size.height = flat(height);
     return rect;
 }
@@ -600,3 +680,14 @@ CGRectRemoveFloatMin(CGRect rect) {
                                removeFloatMin(CGRectGetHeight(rect)));
     return result;
 }
+
+/// outerRange 是否包含了 innerRange
+CG_INLINE BOOL
+NSContainingRanges(NSRange outerRange, NSRange innerRange) {
+    if (innerRange.location >= outerRange.location && outerRange.location + outerRange.length >= innerRange.location + innerRange.length) {
+        return YES;
+    }
+    return NO;
+}
+
+#endif /* QMUICommonDefines_h */

@@ -140,72 +140,43 @@ extension RootViewController:PhotoDelegate{
 extension RootViewController{
     
     func  toAnalysisJSON(){
-        NetManger.commonRequest(router: Router.getRequest("/api/v1/users/1/2", nil, .Login)) { (r ) in
-            let json = r.1 as! JSON
-            print("------> result \n",json)
-            let sub = json["user"]
-            let keyArray = sub.dictionaryValue.map({ (arg) -> String in
-                return arg.key
-            })
-            
-            for sub_key in keyArray {
-                
-                let v = sub[sub_key]
-                switch v.type {
-                case .number:
-                    print("var \(sub_key) : Int = 0 ")
-                    break
-                case .string:
-                    print("var \(sub_key) : String?")
-                    break
-                case .bool:
-                    print("var \(sub_key) : Bool? ")
-                    break
-                case .array:
-                    print("var \(sub_key) : Array? ")
-                    break
-                case .dictionary:
-                    print("var \(sub_key) : [String:Any]? ")
-                    break
-                case .null:
-                    print("var \(sub_key) : null? ")
-                    break
-                case .unknown:
-                    print("var \(sub_key) : unknown? ")
-                    break
-                }
-            }
-        }
-        
+//        NetManger.commonRequest(router: Router.getRequest("/api/v1/users/1/2", nil, .Login)) { (r ) in
+//            let json = r.1 as! JSON
+//            print("------> result \n",json)
+//            let sub = json["user"]
+//            let keyArray = sub.dictionaryValue.map({ (arg) -> String in
+//                return arg.key
+//            })
+//            
+//            for sub_key in keyArray {
+//                
+//                let v = sub[sub_key]
+//                switch v.type {
+//                case .number:
+//                    print("@objc var \(sub_key) : Int = 0 ")
+//                    break
+//                case .string:
+//                    print("@objc var \(sub_key) : String?")
+//                    break
+//                case .bool:
+//                    print("@objc var \(sub_key) : Bool? ")
+//                    break
+//                case .array:
+//                    print("@objc var \(sub_key) : Array? ")
+//                    break
+//                case .dictionary:
+//                    print("@objc var \(sub_key) : [String:Any]? ")
+//                    break
+//                case .null:
+//                    print("@objc var \(sub_key) : null? ")
+//                    break
+//                case .unknown:
+//                    print("@objc var \(sub_key) : unknown? ")
+//                    break
+//                }
+//            }
+//        }
+//        
     }
-    /// 适合简单的模型解析
-    func requestData(){
-        ToastView.showLoading()
-        NetManger.requestData(router: Router.getRequest(APIList.base_url, nil, nil), model: ExampleModel())
-            {
-                [weak self] (result) in
-                guard result.0,let json = result.1 as? [ExampleModel] else {
-                    return
-                }
-                ToastView.hide()
-            }
-    }
-    
-    func sysRequestData(){
-        ToastView.showLoading()
-        Alamofire.request(Router.getRequest(APIList.base_url, ["city":"北京"], nil)).responseJSON {
-            (response) in
-            ToastView.hide()
-            switch response.result{
-            case .success:
-                let json =  JSON(response.data)
-                ToastView.showMessge(json["message"].stringValue)
-                deprint(json)
-                break
-            case .failure(_):
-            break
-            }
-            
-        }
-    }
+  
 }

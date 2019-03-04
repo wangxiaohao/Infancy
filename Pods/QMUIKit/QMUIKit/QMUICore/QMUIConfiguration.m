@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUIConfiguration.m
 //  qmui
 //
 //  Created by QMUI Team on 15/3/29.
-//  Copyright (c) 2015年 QMUI Team. All rights reserved.
 //
 
 #import "QMUIConfiguration.h"
@@ -11,26 +18,18 @@
 #import "UIImage+QMUI.h"
 #import "NSString+QMUI.h"
 #import "UIViewController+QMUI.h"
+#import "QMUIKit.h"
+#import <objc/runtime.h>
+
+// 在 iOS 8 - 11 上实际测量得到
+// Measured on iOS 8 - 11
+const CGSize kUINavigationBarBackIndicatorImageSize = {13, 21};
 
 @implementation QMUIConfiguration
 
 + (instancetype)sharedInstance {
     static dispatch_once_t pred;
-    static QMUIConfiguration *sharedInstance = nil;
-    
-    // 检查是否有在某些类的 +load 方法里调用 QMUICMI，因为在 [QMUIConfiguration init] 方法里会操作到 UI 的东西，例如 [UINavigationBar appearance] xxx 等，这些操作不能太早（+load 里就太早了）执行，否则会 crash，所以加这个检测
-//#ifdef DEBUG
-//    BOOL shouldCheckCallStack = NO;
-//    if (shouldCheckCallStack) {
-//        for (NSString *symbol in [NSThread callStackSymbols]) {
-//            if ([symbol containsString:@" load]"]) {
-//                NSAssert(NO, @"不应该在 + load 方法里调用 %s", __func__);
-//                return nil;
-//            }
-//        }
-//    }
-//#endif
-    
+    static QMUIConfiguration *sharedInstance;
     dispatch_once(&pred, ^{
         sharedInstance = [[QMUIConfiguration alloc] init];
     });
@@ -45,7 +44,63 @@
     return self;
 }
 
-#pragma mark - 初始化默认值
+static BOOL QMUI_hasAppliedInitialTemplate;
+- (void)applyInitialTemplate {
+    if (QMUI_hasAppliedInitialTemplate) {
+        return;
+    }
+    
+    // 自动寻找并应用模板
+    // Automatically look for templates and apply them
+    // @see https://github.com/QMUI/QMUI_iOS/issues/264
+    Protocol *protocol = @protocol(QMUIConfigurationTemplateProtocol);
+    int numberOfClasses = objc_getClassList(NULL, 0);
+    if (numberOfClasses > 0) {
+        Class *classes = (__unsafe_unretained Class *)malloc(sizeof(Class) * numberOfClasses);
+        numberOfClasses = objc_getClassList(classes, numberOfClasses);
+        for (int i = 0; i < numberOfClasses; i++) {
+            Class class = classes[i];
+            // 这里用 containsString 是考虑到 Swift 里 className 由“项目前缀+class 名”组成，如果用 hasPrefix 就无法判断了
+            // Use `containsString` instead of `hasPrefix` because class names in Swift have project prefix prepended
+            if ([NSStringFromClass(class) containsString:@"QMUIConfigurationTemplate"] && [class conformsToProtocol:protocol]) {
+                if ([class instancesRespondToSelector:@selector(shouldApplyTemplateAutomatically)]) {
+                    id<QMUIConfigurationTemplateProtocol> template = [[class alloc] init];
+                    if ([template shouldApplyTemplateAutomatically]) {
+                        QMUI_hasAppliedInitialTemplate = YES;
+                        [template applyConfigurationTemplate];
+                        _active = YES;// 标志配置表已生效
+                        // 只应用第一个 shouldApplyTemplateAutomatically 的主题
+                        // Only apply the first template returned
+                        break;
+                    }
+                }
+            }
+        }
+        free(classes);
+    }
+    
+    if (IS_DEBUG && self.sendAnalyticsToQMUITeam) {
+        [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidFinishLaunchingNotification object:nil queue:[NSOperationQueue new] usingBlock:^(NSNotification * _Nonnull note) {
+            [self sendAnalytics];
+        }];
+    }
+    
+    QMUI_hasAppliedInitialTemplate = YES;
+}
+
+- (void)sendAnalytics {
+    NSString *identifier = [NSBundle mainBundle].bundleIdentifier.qmui_stringByEncodingUserInputQuery;
+    NSString *displayName = ((NSString *)([NSBundle mainBundle].infoDictionary[@"CFBundleDisplayName"] ?: [NSBundle mainBundle].infoDictionary[@"CFBundleName"])).qmui_stringByEncodingUserInputQuery;
+    NSString *QMUIVersion = QMUI_VERSION.qmui_stringByEncodingUserInputQuery;// 如果不以 framework 方式引入 QMUI 的话，是无法通过 CFBundleShortVersionString 获取到 QMUI 所在的 bundle 的版本号的，所以这里改为用脚本生成的变量来获取
+    NSString *appInfo = [NSString stringWithFormat:@"appId=%@&appName=%@&version=%@&platform=iOS", identifier, displayName, QMUIVersion];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://qmuiteam.com/analytics/usageReport"]];
+    request.HTTPMethod = @"POST";
+    request.HTTPBody = [appInfo dataUsingEncoding:NSUTF8StringEncoding];
+    NSURLSession *session = [NSURLSession sharedSession];
+    [[session dataTaskWithRequest:request] resume];
+}
+
+#pragma mark - Initialize default values
 
 - (void)initDefaultConfiguration {
     
@@ -113,9 +168,12 @@
     self.navBarShadowImage = nil;
     self.navBarBarTintColor = nil;
     self.navBarTintColor = nil;
-    self.navBarTitleColor = self.blackColor;
+    self.navBarTitleColor = nil;
     self.navBarTitleFont = nil;
+    self.navBarLargeTitleColor = nil;
+    self.navBarLargeTitleFont = nil;
     self.navBarBackButtonTitlePositionAdjustment = UIOffsetZero;
+    self.sizeNavBarBackIndicatorImageAutomatically = YES;
     self.navBarBackIndicatorImage = nil;
     self.navBarCloseButtonImage = [UIImage qmui_imageWithShape:QMUIImageShapeNavClose size:CGSizeMake(16, 16) tintColor:self.navBarTintColor];
     
@@ -171,7 +229,7 @@
     self.tableSectionIndexTrackingBackgroundColor = nil;
     self.tableViewSeparatorColor = self.separatorColor;
     
-    self.tableViewCellNormalHeight = 44;
+    self.tableViewCellNormalHeight = UITableViewAutomaticDimension;
     self.tableViewCellTitleLabelColor = nil;
     self.tableViewCellDetailLabelColor = nil;
     self.tableViewCellBackgroundColor = self.whiteColor;
@@ -188,6 +246,8 @@
     self.tableViewSectionFooterFont = UIFontBoldMake(12);
     self.tableViewSectionHeaderTextColor = self.grayDarkenColor;
     self.tableViewSectionFooterTextColor = self.grayColor;
+    self.tableViewSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0);
+    self.tableViewSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0);
     self.tableViewSectionHeaderContentInset = UIEdgeInsetsMake(4, 15, 4, 15);
     self.tableViewSectionFooterContentInset = UIEdgeInsetsMake(4, 15, 4, 15);
     
@@ -195,6 +255,8 @@
     self.tableViewGroupedSectionFooterFont = UIFontMake(12);
     self.tableViewGroupedSectionHeaderTextColor = self.grayDarkenColor;
     self.tableViewGroupedSectionFooterTextColor = self.grayColor;
+    self.tableViewGroupedSectionHeaderAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0);
+    self.tableViewGroupedSectionFooterAccessoryMargins = UIEdgeInsetsMake(0, 15, 0, 0);
     self.tableViewGroupedSectionHeaderDefaultHeight = UITableViewAutomaticDimension;
     self.tableViewGroupedSectionFooterDefaultHeight = UITableViewAutomaticDimension;
     self.tableViewGroupedSectionHeaderContentInset = UIEdgeInsetsMake(16, 15, 8, 15);
@@ -202,7 +264,6 @@
     
     #pragma mark - UIWindowLevel
     self.windowLevelQMUIAlertView = UIWindowLevelAlert - 4.0;
-    self.windowLevelQMUIImagePreviewView = UIWindowLevelStatusBar + 1;
     
     #pragma mark - QMUILog
     self.shouldPrintDefaultLog = YES;
@@ -211,23 +272,31 @@
     
     #pragma mark - Others
     
-    self.supportedOrientationMask = UIInterfaceOrientationMaskPortrait;
+    self.automaticCustomNavigationBarTransitionStyle = NO;
+    self.supportedOrientationMask = UIInterfaceOrientationMaskAll;
     self.automaticallyRotateDeviceOrientation = NO;
     self.statusbarStyleLightInitially = NO;
     self.needsBackBarButtonItemTitle = NO;
     self.hidesBottomBarWhenPushedInitially = NO;
+    self.preventConcurrentNavigationControllerTransitions = YES;
     self.navigationBarHiddenInitially = NO;
     self.shouldFixTabBarTransitionBugInIPhoneX = NO;
+    self.shouldFixTabBarButtonBugForAll = NO;
+    self.shouldAssertResizableImageCapInsetsError = NO;
+    self.sendAnalyticsToQMUITeam = YES;
 }
 
 - (void)setNavBarButtonFont:(UIFont *)navBarButtonFont {
     _navBarButtonFont = navBarButtonFont;
     // by molice 2017-08-04 只要用 appearence 的方式修改 UIBarButtonItem 的 font，就会导致界面切换时 UIBarButtonItem 抖动，系统的问题，所以暂时不修改 appearance。
-//    if (navBarButtonFont) {
-//        UIBarButtonItem *barButtonItemAppearance = [UIBarButtonItem appearanceWhenContainedIn:[UINavigationBar class], nil];
-//        [barButtonItemAppearance setTitleTextAttributes:@{NSFontAttributeName: navBarButtonFont} forState:UIControlStateNormal];
-//        [barButtonItemAppearance setTitleTextAttributes:[barButtonItemAppearance titleTextAttributesForState:UIControlStateNormal] forState:UIControlStateHighlighted];
-//    }
+    // by molice 2018-06-14 iOS 11 观察貌似又没抖动了，先试试看
+    if (navBarButtonFont) {
+        UIBarButtonItem *barButtonItemAppearance = [UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UINavigationBar class]]];
+        NSDictionary<NSAttributedStringKey,id> *attributes = @{NSFontAttributeName: navBarButtonFont};
+        [barButtonItemAppearance setTitleTextAttributes:attributes forState:UIControlStateNormal];
+        [barButtonItemAppearance setTitleTextAttributes:attributes forState:UIControlStateHighlighted];
+        [barButtonItemAppearance setTitleTextAttributes:attributes forState:UIControlStateDisabled];
+    }
 }
 
 - (void)setNavBarTintColor:(UIColor *)navBarTintColor {
@@ -263,31 +332,61 @@
 
 - (void)setNavBarTitleFont:(UIFont *)navBarTitleFont {
     _navBarTitleFont = navBarTitleFont;
+    [self updateNavigationBarTitleAttributesIfNeeded];
+}
+
+- (void)setNavBarTitleColor:(UIColor *)navBarTitleColor {
+    _navBarTitleColor = navBarTitleColor;
+    [self updateNavigationBarTitleAttributesIfNeeded];
+}
+
+- (void)updateNavigationBarTitleAttributesIfNeeded {
     if (self.navBarTitleFont || self.navBarTitleColor) {
-        NSMutableDictionary<NSString *, id> *titleTextAttributes = [[NSMutableDictionary alloc] init];
+        NSMutableDictionary<NSAttributedStringKey, id> *titleTextAttributes = [UINavigationBar appearance].titleTextAttributes.mutableCopy;
+        if (!titleTextAttributes) {
+            titleTextAttributes = [[NSMutableDictionary alloc] init];
+        }
         if (self.navBarTitleFont) {
-            [titleTextAttributes setValue:self.navBarTitleFont forKey:NSFontAttributeName];
+            titleTextAttributes[NSFontAttributeName] = self.navBarTitleFont;
         }
         if (self.navBarTitleColor) {
-            [titleTextAttributes setValue:self.navBarTitleColor forKey:NSForegroundColorAttributeName];
+            titleTextAttributes[NSForegroundColorAttributeName] = self.navBarTitleColor;
         }
         [UINavigationBar appearance].titleTextAttributes = titleTextAttributes;
         [QMUIHelper visibleViewController].navigationController.navigationBar.titleTextAttributes = titleTextAttributes;
     }
 }
 
-- (void)setNavBarTitleColor:(UIColor *)navBarTitleColor {
-    _navBarTitleColor = navBarTitleColor;
-    if (self.navBarTitleFont || self.navBarTitleColor) {
-        NSMutableDictionary<NSString *, id> *titleTextAttributes = [[NSMutableDictionary alloc] init];
-        if (self.navBarTitleFont) {
-            [titleTextAttributes setValue:self.navBarTitleFont forKey:NSFontAttributeName];
+- (void)setNavBarLargeTitleFont:(UIFont *)navBarLargeTitleFont {
+    _navBarLargeTitleFont = navBarLargeTitleFont;
+    [self updateNavigationBarLargeTitleTextAttributesIfNeeded];
+}
+
+- (void)setNavBarLargeTitleColor:(UIColor *)navBarLargeTitleColor {
+    _navBarLargeTitleColor = navBarLargeTitleColor;
+    [self updateNavigationBarLargeTitleTextAttributesIfNeeded];
+}
+
+- (void)updateNavigationBarLargeTitleTextAttributesIfNeeded {
+    if (@available(iOS 11, *)) {
+        if (self.navBarLargeTitleFont || self.navBarLargeTitleColor) {
+            NSMutableDictionary<NSString *, id> *largeTitleTextAttributes = [[NSMutableDictionary alloc] init];
+            if (self.navBarLargeTitleFont) {
+                largeTitleTextAttributes[NSFontAttributeName] = self.navBarLargeTitleFont;
+            }
+            if (self.navBarLargeTitleColor) {
+                largeTitleTextAttributes[NSForegroundColorAttributeName] = self.navBarLargeTitleColor;
+            }
+            [UINavigationBar appearance].largeTitleTextAttributes = largeTitleTextAttributes;
+            [QMUIHelper visibleViewController].navigationController.navigationBar.largeTitleTextAttributes = largeTitleTextAttributes;
         }
-        if (self.navBarTitleColor) {
-            [titleTextAttributes setValue:self.navBarTitleColor forKey:NSForegroundColorAttributeName];
-        }
-        [UINavigationBar appearance].titleTextAttributes = titleTextAttributes;
-        [QMUIHelper visibleViewController].navigationController.navigationBar.titleTextAttributes = titleTextAttributes;
+    }
+}
+
+- (void)setSizeNavBarBackIndicatorImageAutomatically:(BOOL)sizeNavBarBackIndicatorImageAutomatically {
+    _sizeNavBarBackIndicatorImageAutomatically = sizeNavBarBackIndicatorImageAutomatically;
+    if (sizeNavBarBackIndicatorImageAutomatically && self.navBarBackIndicatorImage && !CGSizeEqualToSize(self.navBarBackIndicatorImage.size, kUINavigationBarBackIndicatorImageSize)) {
+        self.navBarBackIndicatorImage = self.navBarBackIndicatorImage;// 重新设置一次，以触发自动调整大小
     }
 }
 
@@ -299,20 +398,23 @@
         UINavigationBar *navigationBar = [QMUIHelper visibleViewController].navigationController.navigationBar;
         
         // 返回按钮的图片frame是和系统默认的返回图片的大小一致的（13, 21），所以用自定义返回箭头时要保证图片大小与系统的箭头大小一样，否则无法对齐
-        CGSize systemBackIndicatorImageSize = CGSizeMake(13, 21); // 在iOS 8-11 上实际测量得到
-        CGSize customBackIndicatorImageSize = _navBarBackIndicatorImage.size;
-        if (!CGSizeEqualToSize(customBackIndicatorImageSize, systemBackIndicatorImageSize)) {
-            CGFloat imageExtensionVerticalFloat = CGFloatGetCenter(systemBackIndicatorImageSize.height, customBackIndicatorImageSize.height);
-            _navBarBackIndicatorImage = [_navBarBackIndicatorImage qmui_imageWithSpacingExtensionInsets:UIEdgeInsetsMake(imageExtensionVerticalFloat,
-                                                                                                                         0,
-                                                                                                                         imageExtensionVerticalFloat,
-                                                                                                                         systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width)];
+        // Make sure custom back button image is the same size as the system's back button image, i.e. (13, 21), due to the same frame size they share.
+        if (self.sizeNavBarBackIndicatorImageAutomatically) {
+            CGSize systemBackIndicatorImageSize = kUINavigationBarBackIndicatorImageSize;
+            CGSize customBackIndicatorImageSize = _navBarBackIndicatorImage.size;
+            if (!CGSizeEqualToSize(customBackIndicatorImageSize, systemBackIndicatorImageSize)) {
+                CGFloat imageExtensionVerticalFloat = CGFloatGetCenter(systemBackIndicatorImageSize.height, customBackIndicatorImageSize.height);
+                _navBarBackIndicatorImage = [[_navBarBackIndicatorImage qmui_imageWithSpacingExtensionInsets:UIEdgeInsetsMake(imageExtensionVerticalFloat,
+                                                                                                                              0,
+                                                                                                                              imageExtensionVerticalFloat,
+                                                                                                                              systemBackIndicatorImageSize.width - customBackIndicatorImageSize.width)] imageWithRenderingMode:_navBarBackIndicatorImage.renderingMode];
+            }
         }
         
         navBarAppearance.backIndicatorImage = _navBarBackIndicatorImage;
-        navBarAppearance.backIndicatorTransitionMaskImage = navBarAppearance.backIndicatorImage;
+        navBarAppearance.backIndicatorTransitionMaskImage = _navBarBackIndicatorImage;
         navigationBar.backIndicatorImage = _navBarBackIndicatorImage;
-        navigationBar.backIndicatorTransitionMaskImage = navigationBar.backIndicatorImage;
+        navigationBar.backIndicatorTransitionMaskImage = _navBarBackIndicatorImage;
     }
 }
 

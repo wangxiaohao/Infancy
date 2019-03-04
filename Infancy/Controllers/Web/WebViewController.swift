@@ -42,7 +42,7 @@ class WebViewController: BaseViewController,WKNavigationDelegate,WKUIDelegate{
     
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.title = webView.title
-        ToastView.hide()
+//        ToastView.hide()
         deprint("didFinishNavigation")
     }
     private func webView(_ webView: WKWebView, didFailNavigation navigation: WKNavigation!, withError error: NSError) {

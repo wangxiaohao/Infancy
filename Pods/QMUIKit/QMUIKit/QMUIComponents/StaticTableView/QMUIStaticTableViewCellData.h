@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUIStaticTableViewCellData.h
 //  qmui
 //
-//  Created by MoLice on 15/5/3.
-//  Copyright (c) 2015年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 15/5/3.
 //
 
 #import <Foundation/Foundation.h>
@@ -49,6 +56,9 @@ typedef NS_ENUM(NSInteger, QMUIStaticTableViewCellAccessoryType) {
 
 /// cell 的详细文字，将会被设置到 cell.detailTextLabel.text，所以要求 cellData.style 的值必须是带 detailTextLabel 类型的 style
 @property(nonatomic, copy) NSString *detailText;
+
+/// 会自动在 tableView:cellForRowAtIndexPath: 里调用，这样就不需要实现 cellForRow
+@property(nonatomic, copy) void (^cellForRowBlock)(UITableView *tableView, __kindof QMUITableViewCell *cell, QMUIStaticTableViewCellData *cellData);
 
 /// 当 cell 的点击事件被触发时，要由哪个对象来接收
 @property(nonatomic, assign) id didSelectTarget;

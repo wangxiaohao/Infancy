@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUINavigationTitleView.h
 //  qmui
 //
 //  Created by QMUI Team on 14-7-2.
-//  Copyright (c) 2014年 QMUI Team. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -63,6 +70,7 @@ typedef NS_ENUM(NSInteger, QMUINavigationTitleViewAccessoryType) {
 @property(nonatomic, weak) id<QMUINavigationTitleViewDelegate> delegate;
 @property(nonatomic, assign) QMUINavigationTitleViewStyle style;
 @property(nonatomic, assign, getter=isActive) BOOL active;
+@property(nonatomic, assign) CGFloat maximumWidth UI_APPEARANCE_SELECTOR;
 
 #pragma mark - Titles
 
@@ -139,6 +147,22 @@ typedef NS_ENUM(NSInteger, QMUINavigationTitleViewAccessoryType) {
  *  如果为YES则title居中，`accessoryView`放在title的左边或右边；如果为NO，`accessoryView`和title整体居中。默认值为NO。
  */
 @property(nonatomic, assign) BOOL needsAccessoryPlaceholderSpace;
+
+/*
+ *  同 accessoryView，用于 subtitle 的 AccessoryView
+ *  @warn 为了美观考虑，该属性只对 QMUINavigationTitleViewStyleSubTitleVertical 有效
+ */
+@property(nonatomic, strong) UIView *subAccessoryView;
+
+/*
+ *  用于微调 subAccessoryView 的位置
+ */
+@property(nonatomic, assign) CGPoint subAccessoryViewOffset UI_APPEARANCE_SELECTOR;
+
+/*
+ *  同 needsAccessoryPlaceholderSpace，用于 subtitle
+ */
+@property(nonatomic, assign) BOOL needsSubAccessoryPlaceholderSpace;
 
 /*
  *  初始化方法

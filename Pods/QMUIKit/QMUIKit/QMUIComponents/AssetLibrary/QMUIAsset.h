@@ -1,40 +1,50 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUIAsset.h
 //  qmui
 //
-//  Created by Kayo Lee on 15/6/30.
-//  Copyright (c) 2015年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 15/6/30.
 //
 
 #import <UIKit/UIKit.h>
 #import <Photos/PHImageManager.h>
 
-/// Asset 的类型
 typedef NS_ENUM(NSUInteger, QMUIAssetType) {
-    QMUIAssetTypeUnknow,                                    // 未知类型的 Asset
-    QMUIAssetTypeImage,                                     // 图片类型的 Asset
-    QMUIAssetTypeVideo,                                     // 视频类型的 Asset
-    QMUIAssetTypeAudio                                      // 音频类型的 Asset
+    QMUIAssetTypeUnknow,
+    QMUIAssetTypeImage,
+    QMUIAssetTypeVideo,
+    QMUIAssetTypeAudio
 };
 
 typedef NS_ENUM(NSUInteger, QMUIAssetSubType) {
-    QMUIAssetSubTypeUnknow,                                 // 未知类型
-    QMUIAssetSubTypeImage,                                  // 静态图片类型
-    QMUIAssetSubTypeLivePhoto NS_ENUM_AVAILABLE_IOS(9_1),   // Live Photo 类型
-    QMUIAssetSubTypeGIF                                     // GIF类型
+    QMUIAssetSubTypeUnknow,
+    QMUIAssetSubTypeImage,
+    QMUIAssetSubTypeLivePhoto NS_ENUM_AVAILABLE_IOS(9_1),
+    QMUIAssetSubTypeGIF
 };
 
-/// 从 iCloud 请求 Asset 大图的状态
+/// Status when download asset from iCloud
 typedef NS_ENUM(NSUInteger, QMUIAssetDownloadStatus) {
-    QMUIAssetDownloadStatusSucceed,     // 下载成功或资源本来已经在本地
-    QMUIAssetDownloadStatusDownloading, // 下载中
-    QMUIAssetDownloadStatusCanceled,    // 取消下载
-    QMUIAssetDownloadStatusFailed,      // 下载失败
+    QMUIAssetDownloadStatusSucceed,
+    QMUIAssetDownloadStatusDownloading,
+    QMUIAssetDownloadStatusCanceled,
+    QMUIAssetDownloadStatusFailed
 };
 
 
 @class PHAsset;
 
+/**
+ *  相册里某一个资源的包装对象，该资源可能是图片、视频等。
+ *  @note QMUIAsset 重写了 isEqual: 方法，只要两个 QMUIAsset 的 adentifier 相同，则认为是同一个对象，以方便在数组、字典等容器中对大量 QMUIAsset 进行遍历查找等操作。
+ */
 @interface QMUIAsset : NSObject
 
 @property(nonatomic, assign, readonly) QMUIAssetType assetType;
@@ -42,9 +52,11 @@ typedef NS_ENUM(NSUInteger, QMUIAssetDownloadStatus) {
 
 - (instancetype)initWithPHAsset:(PHAsset *)phAsset;
 
+@property(nonatomic, strong, readonly) PHAsset *phAsset;
 @property(nonatomic, assign, readonly) QMUIAssetDownloadStatus downloadStatus; // 从 iCloud 下载资源大图的状态
 @property(nonatomic, assign) double downloadProgress; // 从 iCloud 下载资源大图的进度
 @property(nonatomic, assign) NSInteger requestID; // 从 iCloud 请求获得资源的大图的请求 ID
+@property (nonatomic, copy, readonly) NSString *identifier;// Asset 的标识，每个 QMUIAsset 的 identifier 都不同。只要两个 QMUIAsset 的 identifier 相同则认为它们是同一个 asset
 
 /// Asset 的原图（包含系统相册“编辑”功能处理后的效果）
 - (UIImage *)originImage;
@@ -52,7 +64,7 @@ typedef NS_ENUM(NSUInteger, QMUIAssetDownloadStatus) {
 /**
  *  Asset 的缩略图
  *
- *  @param size 指定返回的缩略图的大小
+ *  @param size 指定返回的缩略图的大小，pt 为单位
  *
  *  @return Asset 的缩略图
  */
@@ -132,13 +144,6 @@ typedef NS_ENUM(NSUInteger, QMUIAssetDownloadStatus) {
  * 获取图片的 UIImageOrientation 值，仅 assetType 为 QMUIAssetTypeImage 或 QMUIAssetTypeLivePhoto 时有效
  */
 - (UIImageOrientation)imageOrientation;
-
-/**
- *  Asset 的标识，每个 QMUIAsset 的标识值不相同，该标识值经过 md5 处理，避免了特殊字符
- *
- *  @return Asset 的标识字符串
- */
-- (NSString *)assetIdentity;
 
 /// 更新下载资源的结果
 - (void)updateDownloadStatusWithDownloadResult:(BOOL)succeed;

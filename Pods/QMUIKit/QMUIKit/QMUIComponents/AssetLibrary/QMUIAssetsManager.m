@@ -1,14 +1,22 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUIAssetsManager.m
 //  qmui
 //
-//  Created by Kayo Lee on 15/6/9.
-//  Copyright (c) 2015年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 15/6/9.
 //
 
 #import "QMUIAssetsManager.h"
 #import "QMUICore.h"
 #import "QMUIAsset.h"
+#import "QMUILog.h"
 
 void QMUIImageWriteToSavedPhotosAlbumWithAlbumAssetsGroup(UIImage *image, QMUIAssetsGroup *albumAssetsGroup, QMUIWriteAssetCompletionBlock completionBlock) {
     [[QMUIAssetsManager sharedInstance] saveImageWithImageRef:image.CGImage albumAssetsGroup:albumAssetsGroup orientation:image.imageOrientation completionBlock:completionBlock];
@@ -124,7 +132,7 @@ void QMUISaveVideoAtPathToSavedPhotosAlbumWithAlbumAssetsGroup(NSString *videoPa
                                                QMUIAsset *asset = [[QMUIAsset alloc] initWithPHAsset:phAsset];
                                                completionBlock(asset, error);
                                            } else {
-                                               QMUILog(@"Get PHAsset of image error: %@", error);
+                                               QMUILog(@"QMUIAssetLibrary", @"Get PHAsset of image error: %@", error);
                                                completionBlock(nil, error);
                                            }
                                        }];
@@ -144,7 +152,7 @@ void QMUISaveVideoAtPathToSavedPhotosAlbumWithAlbumAssetsGroup(NSString *videoPa
                                                QMUIAsset *asset = [[QMUIAsset alloc] initWithPHAsset:phAsset];
                                                completionBlock(asset, error);
                                            } else {
-                                               QMUILog(@"Get PHAsset of image error: %@", error);
+                                               QMUILog(@"QMUIAssetLibrary", @"Get PHAsset of image error: %@", error);
                                                completionBlock(nil, error);
                                            }
                                        }];
@@ -164,7 +172,7 @@ void QMUISaveVideoAtPathToSavedPhotosAlbumWithAlbumAssetsGroup(NSString *videoPa
                                                QMUIAsset *asset = [[QMUIAsset alloc] initWithPHAsset:phAsset];
                                                completionBlock(asset, error);
                                            } else {
-                                               QMUILog(@"Get PHAsset of video Error: %@", error);
+                                               QMUILog(@"QMUIAssetLibrary", @"Get PHAsset of video Error: %@", error);
                                                completionBlock(nil, error);
                                            }
                                        }];
@@ -310,7 +318,7 @@ void QMUISaveVideoAtPathToSavedPhotosAlbumWithAlbumAssetsGroup(NSString *videoPa
         } else if (imagePathURL) {
             assetChangeRequest = [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:imagePathURL];
         } else {
-            QMUILog(@"Creating asset with empty data");
+            QMUILog(@"QMUIAssetLibrary", @"Creating asset with empty data");
             return;
         }
         assetChangeRequest.creationDate = [NSDate date];
@@ -330,7 +338,7 @@ void QMUISaveVideoAtPathToSavedPhotosAlbumWithAlbumAssetsGroup(NSString *videoPa
         
     } completionHandler:^(BOOL success, NSError *error) {
         if (!success) {
-            QMUILog(@"Creating asset of image error : %@", error);
+            QMUILog(@"QMUIAssetLibrary", @"Creating asset of image error : %@", error);
         }
         
         if (completionHandler) {
@@ -369,7 +377,7 @@ void QMUISaveVideoAtPathToSavedPhotosAlbumWithAlbumAssetsGroup(NSString *videoPa
         
     } completionHandler:^(BOOL success, NSError *error) {
         if (!success) {
-            QMUILog(@"Creating asset of video error: %@", error);
+            QMUILog(@"QMUIAssetLibrary", @"Creating asset of video error: %@", error);
         }
         
         if (completionHandler) {

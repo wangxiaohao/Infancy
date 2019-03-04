@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUITableViewCell.m
 //  qmui
 //
 //  Created by QMUI Team on 14-7-7.
-//  Copyright (c) 2014年 QMUI Team. All rights reserved.
 //
 
 #import "QMUITableViewCell.h"
@@ -24,7 +31,7 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
-        [self didInitializedWithStyle:style];
+        [self didInitializeWithStyle:style];
     }
     return self;
 }
@@ -42,44 +49,9 @@
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super initWithCoder:aDecoder]) {
-        [self didInitializedWithStyle:UITableViewCellStyleDefault];
+        [self didInitializeWithStyle:UITableViewCellStyleDefault];
     }
     return self;
-}
-
-- (void)didInitializedWithStyle:(UITableViewCellStyle)style {
-    _cellPosition = QMUITableViewCellPositionNone;
-    
-    _style = style;
-    _enabled = YES;
-    _accessoryHitTestEdgeInsets = UIEdgeInsetsMake(-12, -12, -12, -12);
-    
-    self.textLabel.font = UIFontMake(16);
-    self.textLabel.backgroundColor = UIColorClear;
-    UIColor *titleLabelColor = TableViewCellTitleLabelColor;
-    if (titleLabelColor) {
-        self.textLabel.textColor = titleLabelColor;
-    }
-    
-    self.detailTextLabel.font = UIFontMake(15);
-    self.detailTextLabel.backgroundColor = UIColorClear;
-    UIColor *detailLabelColor = TableViewCellDetailLabelColor;
-    if (detailLabelColor) {
-        self.detailTextLabel.textColor = detailLabelColor;
-    }
-    
-    UIColor *selectedBackgroundColor = TableViewCellSelectedBackgroundColor;
-    if (selectedBackgroundColor) {
-        UIView *selectedBackgroundView = [[UIView alloc] init];
-        selectedBackgroundView.backgroundColor = selectedBackgroundColor;
-        self.selectedBackgroundView = selectedBackgroundView;
-    }
-    
-    // 因为在hitTest里扩大了accessoryView的响应范围，因此提高了系统一个与此相关的bug的出现几率，所以又在scrollView.delegate里做一些补丁性质的东西来修复
-    if ([self.subviews.firstObject isKindOfClass:[UIScrollView class]]) {
-        UIScrollView *scrollView = (UIScrollView *)[self.subviews objectAtIndex:0];
-        scrollView.delegate = self;
-    }
 }
 
 - (void)dealloc {
@@ -340,11 +312,53 @@
 
 @implementation QMUITableViewCell(QMUISubclassingHooks)
 
+- (void)didInitializeWithStyle:(UITableViewCellStyle)style {
+    _cellPosition = QMUITableViewCellPositionNone;
+    
+    _style = style;
+    _enabled = YES;
+    _accessoryHitTestEdgeInsets = UIEdgeInsetsMake(-12, -12, -12, -12);
+    
+    self.textLabel.font = UIFontMake(16);
+    self.textLabel.backgroundColor = UIColorClear;
+    UIColor *titleLabelColor = TableViewCellTitleLabelColor;
+    if (titleLabelColor) {
+        self.textLabel.textColor = titleLabelColor;
+    }
+    
+    self.detailTextLabel.font = UIFontMake(15);
+    self.detailTextLabel.backgroundColor = UIColorClear;
+    UIColor *detailLabelColor = TableViewCellDetailLabelColor;
+    if (detailLabelColor) {
+        self.detailTextLabel.textColor = detailLabelColor;
+    }
+    
+    UIColor *backgroundColor = TableViewCellBackgroundColor;
+    if (backgroundColor) {
+        self.backgroundColor = backgroundColor;
+    }
+    
+    UIColor *selectedBackgroundColor = TableViewCellSelectedBackgroundColor;
+    if (selectedBackgroundColor) {
+        UIView *selectedBackgroundView = [[UIView alloc] init];
+        selectedBackgroundView.backgroundColor = selectedBackgroundColor;
+        self.selectedBackgroundView = selectedBackgroundView;
+    }
+    
+    // 因为在hitTest里扩大了accessoryView的响应范围，因此提高了系统一个与此相关的bug的出现几率，所以又在scrollView.delegate里做一些补丁性质的东西来修复
+    if ([self.subviews.firstObject isKindOfClass:[UIScrollView class]]) {
+        UIScrollView *scrollView = (UIScrollView *)[self.subviews objectAtIndex:0];
+        scrollView.delegate = self;
+    }
+}
+
 - (void)updateCellAppearanceWithIndexPath:(NSIndexPath *)indexPath {
     // 子类继承
     if (indexPath && self.parentTableView) {
         QMUITableViewCellPosition position = [self.parentTableView qmui_positionForRowAtIndexPath:indexPath];
         self.cellPosition = position;
+    } else {
+        self.cellPosition = QMUITableViewCellPositionNone;
     }
 }
 

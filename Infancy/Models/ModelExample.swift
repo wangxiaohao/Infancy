@@ -8,22 +8,23 @@
 
 import Foundation
 import SwiftyJSON
+import YYModel
 
-struct ExampleModel:ModelBase {
-    static func initWith<T>(_ json: JSON) -> T {
-        let banner = ExampleModel.init(json)
-        return banner as! T
+
+@objc class BaseModel:NSObject,YYModel,NSCoding{
+    @objc var d_id:Int = 0
+    override init() {
+        super.init()
     }
-    var url : String = ""
-    var type : Int   = 0
-    var id  : Int = 0
-    init() {
-        
-    }
-    init(_ json:JSON) {
-        url  = json["url"].stringValue
-        type = json["type"].intValue
-        id   = json["id"].intValue
+    required convenience init?(coder aDecoder: NSCoder) {
+        self.init()
+        self.yy_modelInit(with: aDecoder)
     }
     
+    func encode(with aCoder: NSCoder) {
+        self.yy_modelEncode(with: aCoder)
+    }
+    static func modelCustomPropertyMapper() -> [String : Any]? {
+        return ["d_id":"id"]
+    }
 }

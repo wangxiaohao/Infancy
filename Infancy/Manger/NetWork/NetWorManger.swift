@@ -22,8 +22,7 @@ class RequestAFN {
     /// - Parameters:
     ///   - router: 请求参数
     ///   - completeHandler: 回调
-    func requestData<T:ModelBase>(router:Router,model:T? = nil,completeHandler:@escaping ((Bool,Any))->Void) {
-        
+    func requestData<T:BaseModel>(router:Router,data_key:[String]?=["content"],completeHandler:@escaping (Bool,[T]?)->Void) {
         Alamofire.request(router).responseJSON(completionHandler: {
             [unowned self] response in
             switch response.result {
@@ -33,20 +32,38 @@ class RequestAFN {
                 deprint(result)
                 switch self.checkoutData(result){
                 case .Sucess:
-                    if model != nil {
-                        completeHandler(self.detailWithModel(result["content"], model!))
+                    var data_json = result
+                    for sub in data_key!{
+                        data_json = data_json[sub]
                     }
-                    else {
-                        completeHandler((true,result["content"]))
+                    var result_array : [T] = []
+                    switch data_json.type {
+                    case .dictionary:
+                        guard let new_data : T = T.yy_model(withJSON: data_json) else  {
+                            break;
+                        }
+                        result_array.append(new_data)
+                    case .array:
+                        for sub in data_json.array ?? [] {
+                            guard let dic = sub.dictionaryObject, let new_data : T = T.yy_model(withJSON: dic) else {
+                                break;
+                            }
+                            result_array.append(new_data)
+                        }
+                        break
+                    default:
+                        break
                     }
+                    completeHandler(true,result_array)
+                    break
                 case .Faile:
-                    completeHandler((false,result))
+                    //                    completeHandler((false,result))
                     break
                 }
                 break
             case .failure(let error):
                 deprint(error)
-                completeHandler((false,""))
+                completeHandler(false,nil)
                 self.throwError("网络请求失败，请稍后再试")
                 break
                 
@@ -55,52 +72,111 @@ class RequestAFN {
         })
     }
     
-   
+    
+    
+    
     /// 通用请求 返回json数据
     ///
     /// - Parameters:
     ///   - router: 请求参数
     ///   - completeHandler: 回调
-    func commonRequest(router:Router,completeHandler:@escaping ((Bool,Any))->Void){
+    func commonRequest(router:Router,completeHandler:@escaping (Bool,JSON?)->Void){
         Alamofire.request(router).responseJSON(completionHandler: {
             [unowned self] response in
             switch response.result {
             case .success:
                 let result = JSON(response.data ?? Data())
-//                deprint(result)
+                deprint(result)
                 let status =  self.checkoutData(result)
                 if status  == RequestStaus.Sucess {
-                    completeHandler((true,result))
-                }
-                else {
-                    completeHandler((false,result))
+                    completeHandler(true,result)
                 }
             case .failure( _):
-                completeHandler((false,""))
+                completeHandler(false,nil)
                 self.throwError("网络请求失败，请稍后再试")
                 break
             }
             
         })
+    }
+    
+    func  requestDataWith<T:BaseModel>(router:Router,data_key:[String]?=nil)->SignalProducer<[T],NSError>{
+        return SignalProducer{
+            [weak self] producer, disposable -> () in
+            Alamofire.request(router).responseJSON(completionHandler: {
+                [weak self] response in
+                switch response.result {
+                case .success:
+                    let result = JSON(response.data as Any)
+                    deprint(result)
+                    switch self?.checkoutData(result){
+                    case .Sucess?:
+                        var data_json = result
+                        if let data_key =  data_key {
+                            for sub in data_key{
+                                data_json = data_json[sub]
+                            }
+                        }
+                        var result_array : [T] = []
+                        switch data_json.type {
+                        case .dictionary:
+                            guard let new_data : T = T.yy_model(withJSON: data_json.dictionaryObject!) else  {
+                                break;
+                            }
+                            result_array.append(new_data)
+                        case .array:
+                            for sub in data_json.array ?? [] {
+                                guard let dic = sub.dictionaryObject, let new_data : T = T.yy_model(withJSON: dic) else {
+                                    break;
+                                }
+                                result_array.append(new_data)
+                            }
+                            break
+                        default:
+                            break
+                        }
+                        producer.send(value: result_array)
+                    default:
+                        producer.send(error: NSError.init(domain: result["msg"].string ?? "请求失败", code: result["code"].intValue, userInfo: nil))
+                        break
+                    }
+                case .failure(let error):
+                    deprint(error)
+                    self?.throwError("网络请求失败，请稍后再试")
+                    break
+                }
+                
+            })
+            }.start(on: UIScheduler())
         
     }
     
-    
-        fileprivate func detailWithModel<T:ModelBase>(_ json:JSON,_ model:T)->(Bool,Any){
-            if let datas = json["datas"].array {
-                var newArray : [T] = []
-                for sub in datas {
-                    let new_data:T = T.initWith(sub)
-                    newArray.append(new_data)
+    func  requestJSON(router:Router)->SignalProducer<JSON,NSError>{
+        return SignalProducer{
+            [weak self] producer, disposable -> () in
+            Alamofire.request(router).responseJSON(completionHandler: {
+                [weak self] response in
+                switch response.result {
+                case .success:
+                    let result = JSON(response.data as Any)
+                    deprint(result)
+                    switch self?.checkoutData(result){
+                    case .Sucess?:
+                        producer.send(value: result)
+                    default:
+                        producer.send(error: NSError.init(domain: result["msg"].string ?? "请求失败", code: result["code"].intValue, userInfo: nil))
+                        break
+                    }
+                case .failure(let error):
+                    deprint(error)
+                    self?.throwError("网络请求失败，请稍后再试")
+                    break
                 }
-                return ((true,newArray))
-            }
-            else {
-                let new_data : T = T.initWith(json)
-                return (true,new_data )
-            }
-        }
-    
+                
+            })
+            }.start(on: UIScheduler())
+        
+    }
     /// 上传图片
     ///
     /// - Parameters:
@@ -154,20 +230,15 @@ class RequestAFN {
                                 return
                             }
                         }
-                        ToastView.hide()
-                        ToastView.showError("图片上传失败")
                         completHandle(nil)
                     case  .failure(_):
-                        ToastView.hide()
-                        ToastView.showError("图片上传失败")
+
                         completHandle(nil)
                         
                         break
                     }
                 })
             case .failure(_):
-                ToastView.hide()
-                ToastView.showError("图片上传失败")
                 completHandle(nil)
                 break
             }
@@ -206,9 +277,6 @@ extension RequestAFN{
 //            })
 //        }
         
-        ToastView.hide()
-        
-        ToastView.showError( errormsg)
             
         }
 }

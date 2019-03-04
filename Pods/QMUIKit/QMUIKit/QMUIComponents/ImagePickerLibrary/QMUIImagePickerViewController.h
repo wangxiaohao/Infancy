@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUIImagePickerViewController.h
 //  qmui
 //
-//  Created by Kayo Lee on 15/5/2.
-//  Copyright (c) 2015年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 15/5/2.
 //
 
 #import <UIKit/UIKit.h>
@@ -47,6 +54,9 @@
  */
 - (void)imagePickerViewController:(QMUIImagePickerViewController *)imagePickerViewController didSelectImageWithImagesAsset:(QMUIAsset *)imageAsset afterImagePickerPreviewViewControllerUpdate:(QMUIImagePickerPreviewViewController *)imagePickerPreviewViewController;
 
+/// 是否能够选中 checkbox
+- (BOOL)imagePickerViewController:(QMUIImagePickerViewController *)imagePickerViewController shouldCheckImageAtIndex:(NSInteger)index;
+
 /// 即将选中 checkbox 时调用
 - (void)imagePickerViewController:(QMUIImagePickerViewController *)imagePickerViewController willCheckImageAtIndex:(NSInteger)index;
 
@@ -76,12 +86,12 @@
  *
  *  @see shouldShowDefaultLoadingView
  */
-- (void)imagePickerViewControllerWillFinishLoading:(QMUIImagePickerViewController *)imagePickerViewController;
+- (void)imagePickerViewControllerDidFinishLoading:(QMUIImagePickerViewController *)imagePickerViewController;
 
 @end
 
 
-@interface QMUIImagePickerViewController : QMUICommonViewController<UICollectionViewDataSource, UICollectionViewDelegate, QMUIImagePickerPreviewViewControllerDelegate>
+@interface QMUIImagePickerViewController : QMUICommonViewController <UICollectionViewDataSource, UICollectionViewDelegate, QMUIImagePickerPreviewViewControllerDelegate>
 
 @property(nonatomic, weak) id<QMUIImagePickerViewControllerDelegate> imagePickerViewControllerDelegate;
 
@@ -96,9 +106,6 @@
 @property(nonatomic, strong, readonly) QMUIButton *sendButton;
 @property(nonatomic, strong, readonly) UILabel *imageCountLabel;
 
-/// 由于组件需要通过本地图片的 QMUIAsset 对象读取图片的详细信息，因此这里的需要传入的是包含一个或多个 QMUIAsset 对象的数组，传入后会赋值到 imagesAssetArray ，并自动刷新 UI 展示
-- (void)refreshWithImagesArray:(NSMutableArray<QMUIAsset *> *)imagesArray;
-
 /// 也可以直接传入 QMUIAssetsGroup，然后读取其中的 QMUIAsset 并储存到 imagesAssetArray 中，传入后会赋值到 QMUIAssetsGroup，并自动刷新 UI 展示
 - (void)refreshWithAssetsGroup:(QMUIAssetsGroup *)assetsGroup;
 
@@ -106,7 +113,7 @@
 @property(nonatomic, strong, readonly) QMUIAssetsGroup *assetsGroup;
 
 /// 当前被选择的图片对应的 QMUIAsset 对象数组
-@property(nonatomic, strong) NSMutableArray<QMUIAsset *> *selectedImageAssetArray;
+@property(nonatomic, strong, readonly) NSMutableArray<QMUIAsset *> *selectedImageAssetArray;
 
 /// 是否允许图片多选，默认为 YES。如果为 NO，则不显示 checkbox 和底部工具栏。
 @property(nonatomic, assign) BOOL allowsMultipleSelection;
@@ -125,7 +132,7 @@
 
 /**
  *  加载相册列表时会出现 loading，若需要自定义 loading 的形式，可将该属性置为 NO，默认为 YES。
- *  @see imagePickerViewControllerWillStartLoading: & imagePickerViewControllerWillFinishLoading:
+ *  @see imagePickerViewControllerWillStartLoading: & imagePickerViewControllerDidFinishLoading:
  */
 @property(nonatomic, assign) BOOL shouldShowDefaultLoadingView;
 
@@ -134,6 +141,6 @@
 
 @interface QMUIImagePickerViewController (UIAppearance)
 
-+ (instancetype)appearance;
++ (nonnull instancetype)appearance;
 
 @end

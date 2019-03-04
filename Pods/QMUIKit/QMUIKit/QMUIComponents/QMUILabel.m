@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUILabel.m
 //  qmui
 //
 //  Created by QMUI Team on 14-7-3.
-//  Copyright (c) 2014年 QMUI Team. All rights reserved.
 //
 
 #import "QMUILabel.h"
@@ -11,7 +18,7 @@
 
 @interface QMUILabel ()
 
-@property(nonatomic, strong) UIColor *tempBackgroundColor;
+@property(nonatomic, strong) UIColor *originalBackgroundColor;
 @property(nonatomic, strong) UILongPressGestureRecognizer *longGestureRecognizer;
 @end
 
@@ -47,16 +54,18 @@
 }
 
 - (void)setHighlightedBackgroundColor:(UIColor *)highlightedBackgroundColor {
+    _highlightedBackgroundColor = highlightedBackgroundColor;
+    
     if (highlightedBackgroundColor) {
-        self.tempBackgroundColor = self.backgroundColor;
-        _highlightedBackgroundColor = highlightedBackgroundColor;
+        self.originalBackgroundColor = self.backgroundColor;
     }
 }
 
 - (void)setHighlighted:(BOOL)highlighted {
     [super setHighlighted:highlighted];
+    
     if (self.highlightedBackgroundColor) {
-        self.backgroundColor = highlighted ? self.highlightedBackgroundColor : self.tempBackgroundColor;
+        self.backgroundColor = highlighted ? self.highlightedBackgroundColor : self.originalBackgroundColor;
     }
 }
 
@@ -97,8 +106,12 @@
 - (void)copyString:(id)sender {
     if (self.canPerformCopyAction) {
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-        if (self.text) {
-            pasteboard.string = self.text;
+        NSString *stringToCopy = self.text;
+        if (stringToCopy) {
+            pasteboard.string = stringToCopy;
+            if (self.didCopyBlock) {
+                self.didCopyBlock(self, stringToCopy);
+            }
         }
     }
 }
@@ -110,14 +123,14 @@
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
         [self becomeFirstResponder];
         UIMenuController *menuController = [UIMenuController sharedMenuController];
-        UIMenuItem *copyMenuItem = [[UIMenuItem alloc] initWithTitle:@"复制" action:@selector(copyString:)];
+        UIMenuItem *copyMenuItem = [[UIMenuItem alloc] initWithTitle:self.menuItemTitleForCopyAction ?: @"复制" action:@selector(copyString:)];
         [[UIMenuController sharedMenuController] setMenuItems:@[copyMenuItem]];
         [menuController setTargetRect:self.frame inView:self.superview];
         [menuController setMenuVisible:YES animated:YES];
         
-        // 默认背景色
-        self.tempBackgroundColor = self.backgroundColor;
-        self.backgroundColor = self.highlightedBackgroundColor;
+        [self setHighlighted:YES];
+    } else if (gestureRecognizer.state == UIGestureRecognizerStatePossible) {
+        [self setHighlighted:NO];
     }
 }
 
@@ -125,9 +138,8 @@
     if (!self.canPerformCopyAction) {
         return;
     }
-    if (self.tempBackgroundColor) {
-        self.backgroundColor = self.tempBackgroundColor;
-    }
+    
+    [self setHighlighted:NO];
 }
 
 @end

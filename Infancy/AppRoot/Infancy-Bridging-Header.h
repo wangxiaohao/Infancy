@@ -5,3 +5,4 @@
 #import <MJRefresh/MJRefresh.h>
 #import <QMUIKit/QMUIKit.h>
 #import <FMDB/FMDB.h>
+#import <YYModel/YYModel.h>

@@ -1,15 +1,25 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUIPopupContainerView.m
 //  qmui
 //
-//  Created by MoLice on 15/12/17.
-//  Copyright © 2015年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 15/12/17.
 //
 
 #import "QMUIPopupContainerView.h"
 #import "QMUICore.h"
 #import "QMUICommonViewController.h"
 #import "UIViewController+QMUI.h"
+#import "QMUILog.h"
+#import "UIView+QMUI.h"
+#import "UIWindow+QMUI.h"
 
 @interface QMUIPopupContainerViewWindow : UIWindow
 
@@ -34,6 +44,8 @@
     UILabel                         *_textLabel;
 }
 
+@property(nonatomic, weak) UIView *targetView;
+@property(nonatomic, weak) UIView *navigationItemSuperview;
 @property(nonatomic, strong) QMUIPopupContainerViewWindow *popupWindow;
 @property(nonatomic, weak) UIWindow *previousKeyWindow;
 @property(nonatomic, assign) BOOL hidesByUserTap;
@@ -43,16 +55,23 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
-        [self didInitialized];
+        [self didInitialize];
     }
     return self;
 }
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super initWithCoder:aDecoder]) {
-        [self didInitialized];
+        [self didInitialize];
     }
     return self;
+}
+
+- (void)dealloc {
+    self.navigationItemSuperview.qmui_frameDidChangeBlock = nil;
+    self.navigationItemSuperview = nil;
+    self.targetView.qmui_frameDidChangeBlock = nil;
+    self.targetView = nil;
 }
 
 - (UIView *)superviewIfExist {
@@ -62,8 +81,9 @@
     }
     
     // https://github.com/QMUI/QMUI_iOS/issues/76
-    BOOL shouldLayoutInPopupWindow = self.popupWindow && CGSizeEqualToSize(self.popupWindow.bounds.size, [[[UIApplication sharedApplication] delegate] window].bounds.size);
-    return shouldLayoutInPopupWindow ? self.popupWindow : [[[UIApplication sharedApplication] delegate] window];
+    BOOL shouldLayoutBaseOnPopupWindow = self.popupWindow && CGSizeEqualToSize(self.popupWindow.bounds.size, [[[UIApplication sharedApplication] delegate] window].bounds.size);
+    UIWindow *window = shouldLayoutBaseOnPopupWindow ? self.popupWindow : [[[UIApplication sharedApplication] delegate] window];
+    return window.rootViewController.view;
 }
 
 - (UIImageView *)imageView {
@@ -198,7 +218,7 @@
     BOOL isTextLabelShowing = [self isSubviewShowing:_textLabel];
     if (isImageViewShowing) {
         [_imageView sizeToFit];
-        _imageView.frame = CGRectSetXY(_imageView.frame, self.imageEdgeInsets.left, flat(CGFloatGetCenter(CGRectGetHeight(self.contentView.bounds), CGRectGetHeight(_imageView.frame)) + self.imageEdgeInsets.top));
+        _imageView.frame = CGRectSetXY(_imageView.frame, self.imageEdgeInsets.left, CGFloatGetCenter(CGRectGetHeight(self.contentView.bounds), CGRectGetHeight(_imageView.frame) + self.imageEdgeInsets.top));
     }
     if (isTextLabelShowing) {
         CGFloat textLabelMinX = (isImageViewShowing ? ceil(CGRectGetMaxX(_imageView.frame) + self.imageEdgeInsets.right) : 0) + self.textEdgeInsets.left;
@@ -210,6 +230,37 @@
 }
 
 - (void)layoutWithTargetView:(UIView *)targetView {
+    // 特别地，iOS 11 及以后 UIBarButtonItem 被放在一个 UIStackView 内，在横竖屏旋转等情况下，变化的是 UIBarButtonItem.superview 的 frame，所以这里要把 targetView 改成 superview
+    // TODO: molice iOS 10 及以前，UIBarButtonItem 是直接放到 UINavigationBar 上的，但横竖屏旋转时 UIBarButtonItem 会被重新创建，丢失了旧的引用，这个待补充。
+    if (@available(iOS 11.0, *)) {
+        if ([targetView isKindOfClass:NSClassFromString([NSString stringWithFormat:@"_%@%@%@", @"UIButton", @"Bar", @"Button"])]) {
+            if (targetView.superview != self.navigationItemSuperview) {
+                if (self.navigationItemSuperview.qmui_frameDidChangeBlock) {
+                    self.navigationItemSuperview.qmui_frameDidChangeBlock = nil;
+                }
+                self.navigationItemSuperview = targetView.superview;
+                __weak __typeof(self)weakSelf = self;
+                self.navigationItemSuperview.qmui_frameDidChangeBlock = ^(__kindof UIView * _Nonnull view, CGRect precedingFrame) {
+                    [weakSelf layoutWithTargetView:weakSelf.targetView];
+                };
+            }
+        } else {
+            self.navigationItemSuperview.qmui_frameDidChangeBlock = nil;
+            self.navigationItemSuperview = nil;
+        }
+    }
+    if (targetView != self.targetView) {
+        if (self.targetView.qmui_frameDidChangeBlock) {
+            self.targetView.qmui_frameDidChangeBlock = nil;
+        }
+        self.targetView = targetView;
+        if (!self.navigationItemSuperview) {
+            __weak __typeof(self)weakSelf = self;
+            self.targetView.qmui_frameDidChangeBlock = ^(__kindof UIView * _Nonnull view, CGRect precedingFrame) {
+                [weakSelf layoutWithTargetView:view];
+            };
+        }
+    }
     CGRect targetViewFrameInMainWindow = CGRectZero;
     UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
     if (targetView.window == mainWindow) {
@@ -273,7 +324,7 @@
         tipSize.height = self.maximumHeight;
         _currentLayoutDirection = maximumHeightAbove > maximumHeightBelow ? QMUIPopupContainerViewLayoutDirectionAbove : QMUIPopupContainerViewLayoutDirectionBelow;
         
-        QMUILogInfo(@"%@, 因为上下都不够空间，所以最大高度被强制改为%@, 位于目标的%@", self, @(self.maximumHeight), maximumHeightAbove > maximumHeightBelow ? @"上方" : @"下方");
+        QMUILog(NSStringFromClass(self.class), @"%@, 因为上下都不够空间，所以最大高度被强制改为%@, 位于目标的%@", self, @(self.maximumHeight), maximumHeightAbove > maximumHeightBelow ? @"上方" : @"下方");
         
     } else if (_currentLayoutDirection == QMUIPopupContainerViewLayoutDirectionAbove && !canShowAtAbove) {
         _currentLayoutDirection = QMUIPopupContainerViewLayoutDirectionBelow;
@@ -301,7 +352,7 @@
     self.frame = CGRectFlatMake(tipMinX, tipMinY, tipSize.width, tipSize.height);
     
     // 调整浮层里的箭头的位置
-    CGPoint targetRectCenter = CGPointMake(CGRectGetMidX(targetRect), CGRectGetMidY(targetRect));
+    CGPoint targetRectCenter = CGPointGetCenterWithRect(targetRect);
     CGFloat selfMidX = targetRectCenter.x - (CGRectGetMinX(superviewBoundsInWindow) + CGRectGetMinX(self.frame));
     _arrowMinX = selfMidX - self.arrowSize.width / 2;
     [self setNeedsLayout];
@@ -461,6 +512,9 @@
 - (void)initPopupContainerViewWindowIfNeeded {
     if (!self.popupWindow) {
         self.popupWindow = [[QMUIPopupContainerViewWindow alloc] init];
+        if (@available(iOS 10, *)) {
+            self.popupWindow.qmui_capturesStatusBarAppearance = NO;
+        }
         self.popupWindow.backgroundColor = UIColorClear;
         self.popupWindow.windowLevel = UIWindowLevelQMUIAlertView;
         QMUIPopContainerViewController *viewController = [[QMUIPopContainerViewController alloc] init];
@@ -501,7 +555,7 @@
 
 @implementation QMUIPopupContainerView (UISubclassingHooks)
 
-- (void)didInitialized {
+- (void)didInitialize {
     _backgroundLayer = [CAShapeLayer layer];
     _backgroundLayer.shadowOffset = CGSizeMake(0, 2);
     _backgroundLayer.shadowOpacity = 1;
@@ -595,7 +649,6 @@
     self.borderWidth = appearance.borderWidth;
     self.cornerRadius = appearance.cornerRadius;
     self.qmui_outsideEdge = appearance.qmui_outsideEdge;
-    
 }
 
 @end

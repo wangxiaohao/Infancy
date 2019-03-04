@@ -1,16 +1,44 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  NSString+QMUI.m
 //  qmui
 //
-//  Created by ZhoonChen on 15/7/20.
-//  Copyright (c) 2015年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 15/7/20.
 //
 
 #import "NSString+QMUI.h"
 #import <CommonCrypto/CommonDigest.h>
+#import "NSArray+QMUI.h"
+#import "NSCharacterSet+QMUI.h"
 #import <objc/runtime.h>
 
 @implementation NSString (QMUI)
+
+- (NSArray<NSString *> *)qmui_toArray {
+    if (!self.length) {
+        return nil;
+    }
+    
+    NSMutableArray<NSString *> *array = [[NSMutableArray alloc] init];
+    for (NSInteger i = 0; i < self.length; i++) {
+        NSString *stringItem = [self substringWithRange:NSMakeRange(i, 1)];
+        [array addObject:stringItem];
+    }
+    return [array copy];
+}
+
+- (NSArray<NSString *> *)qmui_toTrimmedArray {
+    return [[self qmui_toArray] qmui_filterWithBlock:^BOOL(NSString *item) {
+        return item.qmui_trim.length > 0;
+    }];
+}
 
 - (NSString *)qmui_trim {
     return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -34,6 +62,10 @@
             result[4], result[5], result[6], result[7],
             result[8], result[9], result[10], result[11],
             result[12], result[13], result[14], result[15]];
+}
+
+- (NSString *)qmui_stringByEncodingUserInputQuery {
+    return [self stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet qmui_URLUserInputQueryAllowedCharacterSet]];
 }
 
 + (NSString *)hexLetterStringWithInteger:(NSInteger)integer {
@@ -220,6 +252,23 @@
 
 - (NSString *)qmui_stringByRemoveLastCharacter {
     return [self qmui_stringByRemoveCharacterAtIndex:self.length - 1];
+}
+
+- (NSString *)qmui_stringMatchedByPattern:(NSString *)pattern {
+    NSRange range = [self rangeOfString:pattern options:NSRegularExpressionSearch|NSCaseInsensitiveSearch];
+    if (range.location != NSNotFound) {
+        return [self substringWithRange:range];
+    }
+    return nil;
+}
+
+- (NSString *)qmui_stringByReplacingPattern:(NSString *)pattern withString:(NSString *)replacement {
+    NSError *error = nil;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:&error];
+    if (error) {
+        return self;
+    }
+    return [regex stringByReplacingMatchesInString:self options:NSMatchingReportCompletion range:NSMakeRange(0, self.length) withTemplate:replacement];
 }
 
 @end

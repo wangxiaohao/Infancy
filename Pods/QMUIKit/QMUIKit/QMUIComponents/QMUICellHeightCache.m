@@ -1,9 +1,16 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  QMUICellHeightCache.m
 //  qmui
 //
-//  Created by zhoonchen on 15/12/23.
-//  Copyright © 2015年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 15/12/23.
 //
 
 #import "QMUICellHeightCache.h"
@@ -11,14 +18,11 @@
 #import "QMUICore.h"
 #import "UIScrollView+QMUI.h"
 #import "UIView+QMUI.h"
+#import "NSNumber+QMUI.h"
 
-@implementation QMUICellHeightCache
-
-@end
-
-@implementation QMUICellHeightKeyCache {
-    NSMutableDictionary *_mutableHeightsByKeyForPortrait;
-    NSMutableDictionary *_mutableHeightsByKeyForLandscape;
+@implementation QMUICellHeightCache {
+    NSMutableDictionary<id<NSCopying>, NSNumber *> *_mutableHeightsByKeyForPortrait;
+    NSMutableDictionary<id<NSCopying>, NSNumber *> *_mutableHeightsByKeyForLandscape;
 }
 
 - (instancetype)init {
@@ -30,7 +34,7 @@
     return self;
 }
 
-- (NSMutableDictionary *)mutableHeightsByKeyForCurrentOrientation {
+- (NSMutableDictionary<id<NSCopying>, NSNumber *> *)mutableHeightsByKeyForCurrentOrientation {
     return UIDeviceOrientationIsPortrait([UIDevice currentDevice].orientation) ? _mutableHeightsByKeyForPortrait : _mutableHeightsByKeyForLandscape;
 }
 
@@ -44,11 +48,7 @@
 }
 
 - (CGFloat)heightForKey:(id<NSCopying>)key {
-#if CGFLOAT_IS_DOUBLE
-    return [[self mutableHeightsByKeyForCurrentOrientation][key] doubleValue];
-#else
-    return [[self mutableHeightsByKeyForCurrentOrientation][key] floatValue];
-#endif
+    return [self mutableHeightsByKeyForCurrentOrientation][key].qmui_CGFloatValue;
 }
 
 - (void)invalidateHeightForKey:(id<NSCopying>)key {
@@ -68,8 +68,8 @@
 @end
 
 @implementation QMUICellHeightIndexPathCache {
-    NSMutableArray *_heightsBySectionForPortrait;
-    NSMutableArray *_heightsBySectionForLandscape;
+    NSMutableArray<NSMutableArray<NSNumber *> *> *_heightsBySectionForPortrait;
+    NSMutableArray<NSMutableArray<NSNumber *> *> *_heightsBySectionForLandscape;
 }
 
 - (instancetype)init {
@@ -81,11 +81,11 @@
     return self;
 }
 
-- (NSMutableArray *)heightsBySectionForCurrentOrientation {
+- (NSMutableArray<NSMutableArray<NSNumber *> *> *)heightsBySectionForCurrentOrientation {
     return UIDeviceOrientationIsPortrait([UIDevice currentDevice].orientation) ? _heightsBySectionForPortrait : _heightsBySectionForLandscape;
 }
 
-- (void)enumerateAllOrientationsUsingBlock:(void (^)(NSMutableArray *heightsBySection))block {
+- (void)enumerateAllOrientationsUsingBlock:(void (^)(NSMutableArray<NSMutableArray<NSNumber *> *> *heightsBySection))block {
     if (block) {
         block(_heightsBySectionForPortrait);
         block(_heightsBySectionForLandscape);
@@ -106,28 +106,23 @@
 
 - (CGFloat)heightForIndexPath:(NSIndexPath *)indexPath {
     [self buildCachesAtIndexPathsIfNeeded:@[indexPath]];
-    NSNumber *number = self.heightsBySectionForCurrentOrientation[indexPath.section][indexPath.row];
-#if CGFLOAT_IS_DOUBLE
-    return number.doubleValue;
-#else
-    return number.floatValue;
-#endif
+    return self.heightsBySectionForCurrentOrientation[indexPath.section][indexPath.row].qmui_CGFloatValue;
 }
 
 - (void)invalidateHeightAtIndexPath:(NSIndexPath *)indexPath {
     [self buildCachesAtIndexPathsIfNeeded:@[indexPath]];
-    [self enumerateAllOrientationsUsingBlock:^(NSMutableArray *heightsBySection) {
+    [self enumerateAllOrientationsUsingBlock:^(NSMutableArray<NSMutableArray<NSNumber *> *> *heightsBySection) {
         heightsBySection[indexPath.section][indexPath.row] = @-1;
     }];
 }
 
 - (void)invalidateAllHeightCache {
-    [self enumerateAllOrientationsUsingBlock:^(NSMutableArray *heightsBySection) {
+    [self enumerateAllOrientationsUsingBlock:^(NSMutableArray<NSMutableArray<NSNumber *> *> *heightsBySection) {
         [heightsBySection removeAllObjects];
     }];
 }
 
-- (void)buildCachesAtIndexPathsIfNeeded:(NSArray *)indexPaths {
+- (void)buildCachesAtIndexPathsIfNeeded:(NSArray<NSIndexPath *> *)indexPaths {
     [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath *indexPath, NSUInteger idx, BOOL *stop) {
         [self buildSectionsIfNeeded:indexPath.section];
         [self buildRowsIfNeeded:indexPath.row inExistSection:indexPath.section];
@@ -135,7 +130,7 @@
 }
 
 - (void)buildSectionsIfNeeded:(NSInteger)targetSection {
-    [self enumerateAllOrientationsUsingBlock:^(NSMutableArray *heightsBySection) {
+    [self enumerateAllOrientationsUsingBlock:^(NSMutableArray<NSMutableArray<NSNumber *> *> *heightsBySection) {
         for (NSInteger section = 0; section <= targetSection; ++section) {
             if (section >= heightsBySection.count) {
                 heightsBySection[section] = [NSMutableArray array];
@@ -145,7 +140,7 @@
 }
 
 - (void)buildRowsIfNeeded:(NSInteger)targetRow inExistSection:(NSInteger)section {
-    [self enumerateAllOrientationsUsingBlock:^(NSMutableArray *heightsBySection) {
+    [self enumerateAllOrientationsUsingBlock:^(NSMutableArray<NSMutableArray<NSNumber *> *> *heightsBySection) {
         NSMutableArray *heightsByRow = heightsBySection[section];
         for (NSInteger row = 0; row <= targetRow; ++row) {
             if (row >= heightsByRow.count) {
@@ -167,10 +162,10 @@
 
 @implementation UITableView (QMUIKeyedHeightCache)
 
-- (QMUICellHeightKeyCache *)qmui_keyedHeightCache {
-    QMUICellHeightKeyCache *cache = objc_getAssociatedObject(self, _cmd);
+- (QMUICellHeightCache *)qmui_keyedHeightCache {
+    QMUICellHeightCache *cache = objc_getAssociatedObject(self, _cmd);
     if (!cache) {
-        cache = [[QMUICellHeightKeyCache alloc] init];
+        cache = [[QMUICellHeightCache alloc] init];
         objc_setAssociatedObject(self, _cmd, cache, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return cache;
@@ -198,34 +193,25 @@
 }
 
 + (void)load {
-    SEL selectors[] = {
-        @selector(reloadData),
-        @selector(insertSections:withRowAnimation:),
-        @selector(deleteSections:withRowAnimation:),
-        @selector(reloadSections:withRowAnimation:),
-        @selector(moveSection:toSection:),
-        @selector(insertRowsAtIndexPaths:withRowAnimation:),
-        @selector(deleteRowsAtIndexPaths:withRowAnimation:),
-        @selector(reloadRowsAtIndexPaths:withRowAnimation:),
-        @selector(moveRowAtIndexPath:toIndexPath:)
-    };
-    for (NSUInteger index = 0; index < sizeof(selectors) / sizeof(SEL); ++index) {
-        SEL originalSelector = selectors[index];
-        SEL swizzledSelector = NSSelectorFromString([@"qmui_" stringByAppendingString:NSStringFromSelector(originalSelector)]);
-        ReplaceMethod([self class], originalSelector, swizzledSelector);
-    }
-    
-    if (@available(iOS 11, *)) {
-        ReplaceMethod([self class], @selector(safeAreaInsetsDidChange), @selector(qmui_safeAreaInsetsDidChange));
-    }
-}
-
-// iOS 11 里，横竖屏带来的 safeAreaInsets 变化时机晚于计算 cell 高度，所以在计算 cell 高度时是获取不到准确的 safeAreaInsets，所以需要在 safeAreaInsetsDidChange 里重新计算
-- (void)qmui_safeAreaInsetsDidChange {
-    [self qmui_safeAreaInsetsDidChange];
-    [self.qmui_keyedHeightCache invalidateAllHeightCache];
-    [self.qmui_indexPathHeightCache invalidateAllHeightCache];
-    [self qmui_reloadData];
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        SEL selectors[] = {
+            @selector(reloadData),
+            @selector(insertSections:withRowAnimation:),
+            @selector(deleteSections:withRowAnimation:),
+            @selector(reloadSections:withRowAnimation:),
+            @selector(moveSection:toSection:),
+            @selector(insertRowsAtIndexPaths:withRowAnimation:),
+            @selector(deleteRowsAtIndexPaths:withRowAnimation:),
+            @selector(reloadRowsAtIndexPaths:withRowAnimation:),
+            @selector(moveRowAtIndexPath:toIndexPath:)
+        };
+        for (NSUInteger index = 0; index < sizeof(selectors) / sizeof(SEL); ++index) {
+            SEL originalSelector = selectors[index];
+            SEL swizzledSelector = NSSelectorFromString([@"qmui_" stringByAppendingString:NSStringFromSelector(originalSelector)]);
+            ExchangeImplementations([self class], originalSelector, swizzledSelector);
+        }
+    });
 }
 
 - (void)qmui_reloadData {
@@ -362,7 +348,7 @@
     if (!templateCell) {
         // 是否有通过dataSource返回的cell
         if ([self.dataSource respondsToSelector:@selector(qmui_tableView:cellWithIdentifier:)] ) {
-            id <qmui_UITableViewDataSource>dataSource = (id<qmui_UITableViewDataSource>)self.dataSource;
+            id <QMUICellHeightCache_UITableViewDataSource>dataSource = (id<QMUICellHeightCache_UITableViewDataSource>)self.dataSource;
             templateCell = [dataSource qmui_tableView:self cellWithIdentifier:identifier];
         }
         // 没有的话，则需要通过register来注册一个cell，否则会crash
@@ -383,15 +369,9 @@
     UITableViewCell *cell = [self templateCellForReuseIdentifier:identifier];
     [cell prepareForReuse];
     if (configuration) { configuration(cell); }
-    CGFloat contentWidth = CGRectGetWidth(self.bounds) - UIEdgeInsetsGetHorizontalValue(self.qmui_safeAreaInsets);
+    CGFloat contentWidth = CGRectGetWidth(self.bounds) - UIEdgeInsetsGetHorizontalValue(self.qmui_safeAreaInsets) - UIEdgeInsetsGetHorizontalValue(self.contentInset);
     CGSize fitSize = CGSizeZero;
     if (cell && contentWidth > 0) {
-        SEL selector = @selector(sizeThatFits:);
-        BOOL inherited = ![cell isMemberOfClass:[UITableViewCell class]]; // 是否UITableViewCell
-        BOOL overrided = [cell.class instanceMethodForSelector:selector] != [UITableViewCell instanceMethodForSelector:selector]; // 是否重写了sizeThatFit:
-        if (inherited && !overrided) {
-            NSAssert(NO, @"Customized cell must override '-sizeThatFits:' method if not using auto layout.");
-        }
         fitSize = [cell sizeThatFits:CGSizeMake(contentWidth, CGFLOAT_MAX)];
     }
     return ceil(fitSize.height);
@@ -431,10 +411,10 @@
 
 @implementation UICollectionView (QMUIKeyedHeightCache)
 
-- (QMUICellHeightKeyCache *)qmui_keyedHeightCache {
-    QMUICellHeightKeyCache *cache = objc_getAssociatedObject(self, _cmd);
+- (QMUICellHeightCache *)qmui_keyedHeightCache {
+    QMUICellHeightCache *cache = objc_getAssociatedObject(self, _cmd);
     if (!cache) {
-        cache = [[QMUICellHeightKeyCache alloc] init];
+        cache = [[QMUICellHeightCache alloc] init];
         objc_setAssociatedObject(self, _cmd, cache, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return cache;
@@ -476,7 +456,7 @@
     for (NSUInteger index = 0; index < sizeof(selectors) / sizeof(SEL); ++index) {
         SEL originalSelector = selectors[index];
         SEL swizzledSelector = NSSelectorFromString([@"qmui_" stringByAppendingString:NSStringFromSelector(originalSelector)]);
-        ReplaceMethod([self class], originalSelector, swizzledSelector);
+        ExchangeImplementations([self class], originalSelector, swizzledSelector);
     }
 }
 
@@ -633,12 +613,6 @@
     if (configuration) { configuration(cell); }
     CGSize fitSize = CGSizeZero;
     if (cell && itemWidth > 0) {
-        SEL selector = @selector(sizeThatFits:);
-        BOOL inherited = ![cell isMemberOfClass:[UICollectionViewCell class]];
-        BOOL overrided = [cell.class instanceMethodForSelector:selector] != [UICollectionViewCell instanceMethodForSelector:selector];
-        if (inherited && !overrided) {
-            NSAssert(NO, @"Customized cell must override '-sizeThatFits:' method if not using auto layout.");
-        }
         fitSize = [cell sizeThatFits:CGSizeMake(itemWidth, CGFLOAT_MAX)];
     }
     return ceil(fitSize.height);

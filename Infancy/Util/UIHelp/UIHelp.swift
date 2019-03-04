@@ -52,7 +52,7 @@ extension UIHelp{
         if !str.contains("#"){
             str = "#" + str
         }
-        return UIColor.qmui_color(withHexString: str)
+        return UIColor.qmui_color(withHexString: str)!
     }
     static func UIColorMake(_ r:CGFloat,_ g:CGFloat,_ b: CGFloat,_ a:CGFloat?=1)->UIColor{
         let color =  UIColor(red: r/255.0, green: g/255.0, blue: b/255.0, alpha: a!/1.0)

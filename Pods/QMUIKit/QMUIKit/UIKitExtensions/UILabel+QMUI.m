@@ -1,23 +1,31 @@
+/*****
+ * Tencent is pleased to support the open source community by making QMUI_iOS available.
+ * Copyright (C) 2016-2018 THL A29 Limited, a Tencent company. All rights reserved.
+ * Licensed under the MIT License (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/MIT
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ *****/
+
 //
 //  UILabel+QMUI.m
 //  qmui
 //
-//  Created by ZhoonChen on 15/7/20.
-//  Copyright (c) 2015年 QMUI Team. All rights reserved.
+//  Created by QMUI Team on 15/7/20.
 //
 
 #import "UILabel+QMUI.h"
 #import "QMUICore.h"
 #import "NSParagraphStyle+QMUI.h"
 #import "NSObject+QMUI.h"
+#import "NSNumber+QMUI.h"
 
 @implementation UILabel (QMUI)
 
 + (void)load {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        ReplaceMethod([self class], @selector(setText:), @selector(qmui_setText:));
-        ReplaceMethod([self class], @selector(setAttributedText:), @selector(qmui_setAttributedText:));
+        ExchangeImplementations([self class], @selector(setText:), @selector(qmui_setText:));
+        ExchangeImplementations([self class], @selector(setAttributedText:), @selector(qmui_setAttributedText:));
     });
 }
 
@@ -148,14 +156,15 @@ static char kAssociatedObjectKey_lineHeight;
 }
 
 - (CGFloat)qmui_lineHeight {
-    return [objc_getAssociatedObject(self, &kAssociatedObjectKey_lineHeight) floatValue];
+    return [(NSNumber *)objc_getAssociatedObject(self, &kAssociatedObjectKey_lineHeight) qmui_CGFloatValue];
 }
 
-- (instancetype)initWithFont:(UIFont *)font textColor:(UIColor *)textColor {
-    if (self = [super init]) {
-        self.font = font;
-        self.textColor = textColor;
-    }
+- (instancetype)qmui_initWithFont:(UIFont *)font textColor:(UIColor *)textColor {
+    BeginIgnoreClangWarning(-Wunused-value)
+    [self init];
+    EndIgnoreClangWarning
+    self.font = font;
+    self.textColor = textColor;
     return self;
 }
 
