@@ -13,6 +13,8 @@ pod 'MJRefresh', '~> 3.1.12'
 pod 'IQKeyboardManagerSwift', '~> 5.0.6'
 pod 'QMUIKit', '~> 2.1.0'
 pod 'FMDB', '~> 2.7.2'
+pod 'Starscream', '~> 3.0.2'
+
   # Pods for Infancy
 
 end

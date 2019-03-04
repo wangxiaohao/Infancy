@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3B11E523B8DDA0F7F6CB634F /* Pods_Infancy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EAD53E34E9E6CB35B8B2F7B /* Pods_Infancy.framework */; };
+		D2397D1D205F8846005529BA /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2397D1C205F8845005529BA /* Socket.swift */; };
 		D258551D2047A23B0039C8B3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D258551C2047A23B0039C8B3 /* AppDelegate.swift */; };
 		D25855242047A23B0039C8B3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D25855232047A23B0039C8B3 /* Assets.xcassets */; };
 		D25855272047A23B0039C8B3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D25855252047A23B0039C8B3 /* LaunchScreen.storyboard */; };
@@ -31,16 +32,17 @@
 		D29DF3ED2047CCB400F00356 /* SQLManger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3EB2047CCB400F00356 /* SQLManger.swift */; };
 		D29DF3F32047D73E00F00356 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3F22047D73E00F00356 /* AppInfo.swift */; };
 		D29DF3F72047D93F00F00356 /* UIHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3F52047D93F00F00356 /* UIHelp.swift */; };
-		D29DF3F82047D93F00F00356 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF3F62047D93F00F00356 /* ToastView.swift */; };
 		D29DF4012047E03A00F00356 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF4002047E03A00F00356 /* Protocols.swift */; };
 		D29DF4032047F7E600F00356 /* ModelExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF4022047F7E600F00356 /* ModelExample.swift */; };
 		D29DF40C20481CDD00F00356 /* QMUIConfigurationTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF40B20481CDD00F00356 /* QMUIConfigurationTemplate.swift */; };
 		D29DF40E204820A900F00356 /* Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29DF40D204820A900F00356 /* Color.swift */; };
+		D2FC2F32222CE7880056925F /* UIView+Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FC2F31222CE7870056925F /* UIView+Toast.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0736E7F3FB3E9BB679B0B6F9 /* Pods-Infancy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Infancy.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Infancy/Pods-Infancy.debug.xcconfig"; sourceTree = "<group>"; };
 		4EAD53E34E9E6CB35B8B2F7B /* Pods_Infancy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Infancy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2397D1C205F8845005529BA /* Socket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		D25855192047A23B0039C8B3 /* Infancy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Infancy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D258551C2047A23B0039C8B3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D25855232047A23B0039C8B3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -67,11 +69,11 @@
 		D29DF3EE2047D63A00F00356 /* Infancy-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Infancy-Bridging-Header.h"; sourceTree = "<group>"; };
 		D29DF3F22047D73E00F00356 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		D29DF3F52047D93F00F00356 /* UIHelp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIHelp.swift; sourceTree = "<group>"; };
-		D29DF3F62047D93F00F00356 /* ToastView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		D29DF4002047E03A00F00356 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		D29DF4022047F7E600F00356 /* ModelExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelExample.swift; sourceTree = "<group>"; };
 		D29DF40B20481CDD00F00356 /* QMUIConfigurationTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QMUIConfigurationTemplate.swift; sourceTree = "<group>"; };
 		D29DF40D204820A900F00356 /* Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Color.swift; sourceTree = "<group>"; };
+		D2FC2F31222CE7870056925F /* UIView+Toast.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Toast.swift"; sourceTree = "<group>"; };
 		DBFF7000C1E461090F1AD3C3 /* Pods-Infancy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Infancy.release.xcconfig"; path = "Pods/Target Support Files/Pods-Infancy/Pods-Infancy.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -221,6 +223,7 @@
 		D29DF3D12047A42E00F00356 /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				D2FC2F31222CE7870056925F /* UIView+Toast.swift */,
 				D29DF4002047E03A00F00356 /* Protocols.swift */,
 				D29DF3F42047D92E00F00356 /* UIHelp */,
 				D29DF3E52047CB4B00F00356 /* Function.swift */,
@@ -262,6 +265,7 @@
 		D29DF3E02047C7ED00F00356 /* NetWork */ = {
 			isa = PBXGroup;
 			children = (
+				D2397D1C205F8845005529BA /* Socket.swift */,
 				D29DF3E72047CBF100F00356 /* NetWorManger.swift */,
 				D29DF3E12047C90B00F00356 /* RequestRouter.swift */,
 			);
@@ -281,7 +285,6 @@
 			isa = PBXGroup;
 			children = (
 				D29DF3F52047D93F00F00356 /* UIHelp.swift */,
-				D29DF3F62047D93F00F00356 /* ToastView.swift */,
 			);
 			path = UIHelp;
 			sourceTree = "<group>";
@@ -325,7 +328,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = haowang;
 				TargetAttributes = {
 					D25855182047A23B0039C8B3 = {
@@ -421,6 +424,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D29DF3ED2047CCB400F00356 /* SQLManger.swift in Sources */,
+				D2FC2F32222CE7880056925F /* UIView+Toast.swift in Sources */,
 				D28BAE8F204908D000A2064A /* WebViewController.swift in Sources */,
 				D258551D2047A23B0039C8B3 /* AppDelegate.swift in Sources */,
 				D28BAE822048F5B700A2064A /* DemoViewController.swift in Sources */,
@@ -432,7 +436,7 @@
 				D28BAE95204938C400A2064A /* InSingleImagePicker.swift in Sources */,
 				D29DF40C20481CDD00F00356 /* QMUIConfigurationTemplate.swift in Sources */,
 				D29DF3DF2047B66900F00356 /* BaseTabBarViewController.swift in Sources */,
-				D29DF3F82047D93F00F00356 /* ToastView.swift in Sources */,
+				D2397D1D205F8846005529BA /* Socket.swift in Sources */,
 				D28BAE8B2049079700A2064A /* PhotoManger.swift in Sources */,
 				D29DF40E204820A900F00356 /* Color.swift in Sources */,
 				D29DF4032047F7E600F00356 /* ModelExample.swift in Sources */,
@@ -475,6 +479,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -482,6 +487,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -532,6 +538,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -539,6 +546,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -572,6 +580,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0736E7F3FB3E9BB679B0B6F9 /* Pods-Infancy.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;
@@ -593,6 +602,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = DBFF7000C1E461090F1AD3C3 /* Pods-Infancy.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Manual;

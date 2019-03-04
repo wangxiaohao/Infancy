@@ -70,8 +70,8 @@ enum Router: URLRequestConvertible {
         switch type!  {
         case .Login:
             //登录token配置
-            var token = ""
-            return ["_tk": token]
+            let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjIsInRlbCI6IjE3NjIxNzY0Njc1Iiwicm9sZSI6MSwic2VydmljZSI6MCwiYXV0aCI6MCwiZXhwaXJlIjoxNTU0MDMzMTQzNzYwLCJpYXQiOjE1NTE0NDExNDN9.O_hWcceeM5n_mrQL1KHRk27Wxuw8QiJ78Ki3ZNHhIdQ"
+            return ["X-auth-token": token]
         case .None:
             return nil
         }
@@ -87,6 +87,7 @@ enum Router: URLRequestConvertible {
         var urlRequest = URLRequest(url: url)
         urlRequest.httpMethod = method.rawValue
         urlRequest.timeoutInterval = 10
+        urlRequest.allHTTPHeaderFields = header
         deprint("========request URL \(url)")
         
         switch self {

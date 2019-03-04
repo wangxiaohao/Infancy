@@ -198,6 +198,7 @@ PODS:
     - Result (~> 3.2)
   - Result (3.2.4)
   - SnapKit (4.0.0)
+  - Starscream (3.0.3)
   - SwiftyJSON (4.0.0)
 
 DEPENDENCIES:
@@ -209,6 +210,7 @@ DEPENDENCIES:
   - QMUIKit (~> 2.1.0)
   - ReactiveCocoa (~> 7.0.1)
   - SnapKit (~> 4.0.0)
+  - Starscream (~> 3.0.2)
   - SwiftyJSON (~> 4.0.0)
 
 SPEC CHECKSUMS:
@@ -222,8 +224,9 @@ SPEC CHECKSUMS:
   ReactiveSwift: d9fe0db33c1aaabecb092e8de83cf52875c0de6f
   Result: d2d07204ce72856f1fd9130bbe42c35a7b0fea10
   SnapKit: a42d492c16e80209130a3379f73596c3454b7694
+  Starscream: dfb1b3f39506717ee52b67fb48de0c8269504cbc
   SwiftyJSON: 070dabdcb1beb81b247c65ffa3a79dbbfb3b48aa
 
-PODFILE CHECKSUM: 5ed408ce9b54ae2dd3b94858b2bb62c0e78329ed
+PODFILE CHECKSUM: a11d7f88dad0b6ba4c3ce01219857da1fc64f235
 
 COCOAPODS: 1.1.1

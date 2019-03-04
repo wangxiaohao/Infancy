@@ -67,7 +67,7 @@ class RequestAFN {
             switch response.result {
             case .success:
                 let result = JSON(response.data ?? Data())
-                deprint(result)
+//                deprint(result)
                 let status =  self.checkoutData(result)
                 if status  == RequestStaus.Sucess {
                     completeHandler((true,result))

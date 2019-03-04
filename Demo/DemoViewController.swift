@@ -10,11 +10,17 @@ import UIKit
 import QMUIKit
 import Alamofire
 import SwiftyJSON
+import Starscream
+import ReactiveSwift
+import Result
 class RootViewController: BaseViewController {
 
     var tableView:QMUITableView!
     fileprivate var dataSource:[String]!
     fileprivate let identifier = "test"
+    let (siganl,obser) = Signal<Int,NoError>.pipe()
+    var dis : Disposable?
+
     var imgs:[UIImage] = []
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +34,17 @@ class RootViewController: BaseViewController {
             return table_view
         }()
         dataSource = ["图片选择","网络请求","刷新加载","缓存","按钮","Toast"]
+        
+     
+        
+        siganl.observeValues {
+            [weak self](value) in
+            
+            self?.toAnalysisJSON()
+            print("222222222222----->\(value)")
+        }
+        
+      
     }
     override func viewDidAppear(_ animated: Bool) {
        
@@ -61,15 +78,55 @@ extension RootViewController:QMUITableViewDelegate,QMUITableViewDataSource{
         tableView.deselectRow(at: indexPath, animated: true)
         switch indexPath.row {
         case 0:
-            self.actionSheetToPickImage()
+//            self.actionSheetToPickImage()
+             self.dis?.dispose()
+            break
+            
+          
         case 1:
-            sysRequestData()
+//            sysRequestData()
+            let dis1 =    siganl.observeValues { (value) in
+                value
+                
+                print("111111111111----->\(value)")
+              
+            }
+            dis = dis1
+        case 3:
+              obser.send(value: 1)
+        case 4:
+              obser.send(value: 2)
+            
         default:
             break
         }
     }
 }
+extension RootViewController:WebSocketDelegate{
+    func websocketDidConnect(socket: WebSocketClient) {
+        print("连接成功")
 
+    }
+    
+    func websocketDidDisconnect(socket: WebSocketClient, error: Error?) {
+        print("关闭连接")
+
+    }
+    
+    func websocketDidReceiveMessage(socket: WebSocketClient, text: String) {
+        print("接受",text)
+
+    }
+    
+    func websocketDidReceiveData(socket: WebSocketClient, data: Data) {
+        print("接受data",data)
+
+    }
+    
+  
+    
+    
+}
 
 extension RootViewController:PhotoDelegate{
     
@@ -82,6 +139,45 @@ extension RootViewController:PhotoDelegate{
 
 extension RootViewController{
     
+    func  toAnalysisJSON(){
+        NetManger.commonRequest(router: Router.getRequest("/api/v1/users/1/2", nil, .Login)) { (r ) in
+            let json = r.1 as! JSON
+            print("------> result \n",json)
+            let sub = json["user"]
+            let keyArray = sub.dictionaryValue.map({ (arg) -> String in
+                return arg.key
+            })
+            
+            for sub_key in keyArray {
+                
+                let v = sub[sub_key]
+                switch v.type {
+                case .number:
+                    print("var \(sub_key) : Int = 0 ")
+                    break
+                case .string:
+                    print("var \(sub_key) : String?")
+                    break
+                case .bool:
+                    print("var \(sub_key) : Bool? ")
+                    break
+                case .array:
+                    print("var \(sub_key) : Array? ")
+                    break
+                case .dictionary:
+                    print("var \(sub_key) : [String:Any]? ")
+                    break
+                case .null:
+                    print("var \(sub_key) : null? ")
+                    break
+                case .unknown:
+                    print("var \(sub_key) : unknown? ")
+                    break
+                }
+            }
+        }
+        
+    }
     /// 适合简单的模型解析
     func requestData(){
         ToastView.showLoading()
@@ -112,6 +208,4 @@ extension RootViewController{
             
         }
     }
-    
-    
 }
