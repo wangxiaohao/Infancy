@@ -70,7 +70,7 @@ enum Router: URLRequestConvertible {
         switch type!  {
         case .Login:
             //登录token配置
-            let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjIsInRlbCI6IjE3NjIxNzY0Njc1Iiwicm9sZSI6MSwic2VydmljZSI6MCwiYXV0aCI6MCwiZXhwaXJlIjoxNTU0MDMzMTQzNzYwLCJpYXQiOjE1NTE0NDExNDN9.O_hWcceeM5n_mrQL1KHRk27Wxuw8QiJ78Ki3ZNHhIdQ"
+            let token = ""
             return ["X-auth-token": token]
         case .None:
             return nil

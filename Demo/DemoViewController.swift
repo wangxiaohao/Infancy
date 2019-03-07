@@ -140,16 +140,16 @@ extension RootViewController:PhotoDelegate{
 extension RootViewController{
     
     func  toAnalysisJSON(){
-//        NetManger.commonRequest(router: Router.getRequest("/api/v1/users/1/2", nil, .Login)) { (r ) in
+//        NetManger.commonRequest(router: Router.getRequest("", nil, .Login)) { (r ) in
 //            let json = r.1 as! JSON
 //            print("------> result \n",json)
 //            let sub = json["user"]
 //            let keyArray = sub.dictionaryValue.map({ (arg) -> String in
 //                return arg.key
 //            })
-//            
+//
 //            for sub_key in keyArray {
-//                
+//
 //                let v = sub[sub_key]
 //                switch v.type {
 //                case .number:
@@ -176,7 +176,7 @@ extension RootViewController{
 //                }
 //            }
 //        }
-//        
+//
     }
   
 }
